@@ -1,0 +1,7 @@
+{
+  "name": "Aether Collection",
+  "symbol": "AETH",
+  "artistAccountId": "0.0.6456952",
+  "royalties": { "artistBps": 500, "projectBps": 100, "minHbar": 0 },
+  "governance": { "mode": "artist" }
+}

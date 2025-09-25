@@ -1,0 +1,27 @@
+{
+  "ok": true,
+  "windowDays": 7,
+  "period": {
+    "end": 1757722761118,
+    "start": 1757117961118
+  },
+  "metrics": {
+    "byType": {
+      "keysnap": 4,
+      "test_event": 1,
+      "test_event_2": 1
+    }
+  },
+  "insights": {
+    "trends": [
+      "Semana tranquila. No se detectaron actividades significativas."
+    ],
+    "opportunities": [],
+    "actions": [
+      "Sugerencia: usa la biblioteca para descubrir material nuevo y prueba el mixer/crossfade."
+    ],
+    "learning": [
+      "Activa el modo Aprendizaje: iré personalizando recomendaciones a medida que interactúes."
+    ]
+  }
+}

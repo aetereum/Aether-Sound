@@ -1,0 +1,37 @@
+{
+  "name": "aether-sound",
+  "version": "1.0.0",
+  "description": "Generadores musicales algorítmicos y asistidos por IA",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "e2e": "powershell -NoLogo -NoProfile -File scripts/e2e.ps1",
+    "e2e:3001": "powershell -NoLogo -NoProfile -File scripts/e2e.ps1 -BaseUrl 'http://localhost:3001'",
+    "generate:composition": "node composition-generator.js",
+    "generate:drums": "node drum-generator.js",
+    "experiment:render-synth": "node render-simple-synth.js"
+  },
+  "dependencies": {
+    "@hashgraph/sdk": "^2.72.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.2",
+    "multer": "^1.4.5-lts.1",
+    "node-fetch": "^2.6.7",
+    "wavefile": "^11.0.0",
+    "web3.storage": "^4.5.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "music",
+    "AI",
+    "audio",
+    "generation",
+    "synthesizer"
+  ],
+  "author": "Aether Sound Team",
+  "license": "MIT"
+}

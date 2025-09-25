@@ -1,0 +1,25 @@
+{
+  "id": "artista-y-tema-x",
+  "title": "Tema X",
+  "artist": "Artista Y",
+  "cover": "",
+  "isrc": "",
+  "iswc": "",
+  "upc": "",
+  "spotify": "",
+  "apple": "",
+  "youtube": "",
+  "instagram": "",
+  "website": "",
+  "contact": "",
+  "notes": "",
+  "people": [
+    { "role": "Composer", "name": "A" },
+    { "role": "Producer", "name": "B" }
+  ],
+  "splits": [
+    { "party": "A", "bps": 6000 },
+    { "party": "B", "bps": 4000 }
+  ],
+  "updatedAt": 1737240000000
+}

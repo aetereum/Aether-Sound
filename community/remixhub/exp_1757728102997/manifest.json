@@ -1,0 +1,16 @@
+{
+  "id": "exp_1757728102997",
+  "title": "Demo",
+  "description": "Prueba",
+  "stems": [
+    {
+      "file": "test.wav",
+      "url": "/output/test.wav"
+    }
+  ],
+  "owner": {
+    "name": "Tester"
+  },
+  "createdAt": 1757728103000,
+  "submissions": []
+}

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48" width="220" height="48">
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7C4DFF"/>
+      <stop offset="50%" stop-color="#00E5FF"/>
+      <stop offset="100%" stop-color="#00FF95"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Monograma (onda + A) -->
+  <g transform="translate(8,6)">
+    <!-- A estilizada -->
+    <path d="M0,36 L12,0 L24,36 M6,18 L18,18" fill="none" stroke="url(#g1)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+    <!-- Onda -->
+    <path d="M32,24 C36,16 40,16 44,24 C48,32 52,32 56,24" fill="none" stroke="url(#g1)" stroke-width="3" stroke-linecap="round" filter="url(#glow)"/>
+  </g>
+
+  <!-- Texto Aether Sound minimal -->
+  <g transform="translate(76,30)" fill="url(#g1)" filter="url(#glow)">
+    <text x="0" y="0" font-family="'Segoe UI', Roboto, Inter, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="0.5">
+      Aether
+    </text>
+    <text x="80" y="0" font-family="'Segoe UI', Roboto, Inter, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="600" opacity="0.9">
+      Sound
+    </text>
+  </g>
+</svg>

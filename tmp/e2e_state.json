@@ -1,0 +1,28 @@
+﻿{
+    "ok":  true,
+    "accountId":  "0.0.6837093",
+    "tokenId":  "0.0.6837097",
+    "serial":  1,
+    "associate":  {
+                      "ok":  true,
+                      "status":  "SUCCESS",
+                      "accountId":  "0.0.6837093",
+                      "tokenId":  "0.0.6837097"
+                  },
+    "transfer":  {
+                     "ok":  true,
+                     "status":  "SUCCESS",
+                     "tokenId":  "0.0.6837097",
+                     "serial":  1,
+                     "from":  "0.0.6456952",
+                     "to":  "0.0.6837093"
+                 },
+    "owner":  {
+                  "ok":  true,
+                  "tokenId":  "0.0.6837097",
+                  "serial":  1,
+                  "owner":  "0.0.6837093",
+                  "ledgerId":  "testnet",
+                  "metadataBase64":  "eyJuYW1lIjoiRTJFIE5GVCIsInRzIjoiMjAyNS0wOS0xM1QxNDowNjoxOSJ9"
+              }
+}
