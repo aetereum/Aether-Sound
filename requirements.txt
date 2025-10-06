@@ -1,2 +1,5 @@
 magenta
 tensorflow
+numpy
+librosa
+soundfile

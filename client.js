@@ -8,6 +8,27 @@ window.addEventListener('DOMContentLoaded', () => {
 
   const selectedFiles = new Set();
 
+  // --- Sistema de Notificaciones "Toast" ---
+  function toast(msg, { type = 'info', duration = 3000 } = {}) {
+    let cont = document.getElementById('toast-container');
+    if (!cont) {
+      cont = document.createElement('div');
+      cont.id = 'toast-container';
+      cont.className = 'toast-container';
+      document.body.appendChild(cont);
+    }
+    const div = document.createElement('div');
+    div.className = `toast ${type}`; // 'info', 'success', 'error'
+    div.textContent = msg;
+    cont.appendChild(div);
+    requestAnimationFrame(() => div.classList.add('show'));
+    setTimeout(() => {
+      div.classList.remove('show');
+      setTimeout(() => div.remove(), 300);
+    }, duration);
+  }
+  window.__toast = toast; // Exponer globalmente si es necesario
+
   async function refreshList() {
     const list = document.getElementById('output-list');
     list.innerHTML = '<li>Cargando...</li>';
@@ -98,10 +119,10 @@ window.addEventListener('DOMContentLoaded', () => {
           try {
             e.currentTarget.disabled = true; e.currentTarget.textContent = 'Procesando...';
             const data = await callApi('/api/effects/pitch-shift', { method: 'POST', body: JSON.stringify({ file, semitones: semi }) });
+            toast(data.ok ? `Listo: ${data.file}` : (data.error || 'Error en pitch-shift'), { type: data.ok ? 'success' : 'error' });
             await refreshList();
-            alert(data.ok ? `Listo: ${data.file}` : (data.error || 'Error en pitch-shift'));
           } catch (err) {
-            alert('Error: ' + err.message);
+            toast('Error: ' + err.message, { type: 'error' });
           } finally {
             e.currentTarget.disabled = false; e.currentTarget.textContent = prev;
           }
@@ -130,8 +151,9 @@ window.addEventListener('DOMContentLoaded', () => {
       btn.disabled = true; btn.textContent = 'Generando...';
       await callApi(endpoint, { method: 'POST' });
       await refreshList();
+      toast(`${type} generado!`, { type: 'success' });
     } catch (e) {
-      alert('Error: ' + e.message);
+      toast('Error: ' + e.message, { type: 'error' });
     } finally {
       btn.disabled = false; btn.textContent = prevText;
     }
@@ -156,36 +178,22 @@ window.addEventListener('DOMContentLoaded', () => {
     pre.textContent = JSON.stringify(plan || {}, null, 2);
   }
 
-  function getOverrides() {
-    const url = (document.getElementById('n8n-url') || {}).value || '';
-    const auth = (document.getElementById('n8n-auth') || {}).value || '';
-    const apiKey = (document.getElementById('n8n-api-key') || {}).value || '';
-    const headers = {};
-    if (auth) headers['Authorization'] = auth;
-    if (apiKey) headers['X-N8N-API-KEY'] = apiKey;
-    const overrides = {};
-    if (url) overrides.n8nUrl = url;
-    if (Object.keys(headers).length) overrides.headers = headers;
-    return overrides;
-  }
-
   async function aiSearchCompose() {
     const btn = document.getElementById('btn-ai');
     const q = document.getElementById('ai-query').value || 'worldwide tracks fusion';
     const max = parseInt(document.getElementById('ai-max').value || '10', 10);
-    const overrides = getOverrides();
     if (btn) btn.disabled = true;
     try {
-      const res = await fetch('/api/ai/search-compose', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q, maxItems: max, overrides }) });
+      const res = await fetch('/api/ai/search-compose', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q, maxItems: max }) });
       const data = await res.json();
       console.log('AI result', data);
       renderSources(data.sources);
       renderPlan(data.plan);
       await refreshList();
-      alert(data.ok ? 'AI OK: plan generado y renders locales listos' : 'AI error: ' + (data.error || ''));
+      toast(data.ok ? 'Plan de IA generado y audios listos' : 'Error de IA: ' + (data.error || ''), { type: data.ok ? 'success' : 'error' });
     } catch (e) {
       console.error(e);
-      alert('Error IA: ' + e.message);
+      toast('Error IA: ' + e.message, { type: 'error' });
     } finally {
       if (btn) btn.disabled = false;
     }
@@ -197,7 +205,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const desc = document.getElementById('album-desc').value || '';
     const tracks = Array.from(selectedFiles);
     if (tracks.length === 0) {
-      alert('Selecciona al menos una pista para crear el álbum.');
+      toast('Selecciona al menos una pista para crear el álbum.', { type: 'error' });
       return;
     }
     const btn = document.getElementById('btn-create-album');
@@ -205,6 +213,7 @@ window.addEventListener('DOMContentLoaded', () => {
     try {
       btn.disabled = true; btn.textContent = 'Creando Álbum...';
       const data = await callApi('/api/album/create', { method: 'POST', body: JSON.stringify({ title, artist, description: desc, tracks }) });
+      toast(data.ok ? `Manifiesto de álbum creado: ${data.albumId}` : `Error: ${data.error}`, { type: data.ok ? 'success' : 'error' });
       result.textContent = data.ok ? `Álbum creado: ${data.albumId || 'pendiente'}` : (data.error || 'Error creando álbum');
       if (data.ok && data.albumId) {
         const mintBtn = document.getElementById('btn-mint-hedera');
@@ -223,11 +232,19 @@ window.addEventListener('DOMContentLoaded', () => {
   const btnMint = document.getElementById('btn-mint-hedera');
   if (btnMint) btnMint.addEventListener('click', async () => {
     const albumId = btnMint.dataset.albumId;
-    if (!albumId) { alert('Crea un álbum primero.'); return; }
+    if (!albumId) { toast('Crea un álbum primero.', { type: 'error' }); return; }
     btnMint.disabled = true; const prev = btnMint.textContent; btnMint.textContent = 'Minteando...';
     try {
       const data = await callApi('/api/hedera/mint', { method: 'POST', body: JSON.stringify({ albumId }) });
-      (document.getElementById('publish-result') || {}).textContent = data.message || JSON.stringify(data);
+      const resultEl = document.getElementById('publish-result');
+      if (resultEl) {
+        toast(data.ok ? `¡Álbum minteado! Token ID: ${data.tokenId}` : `Error: ${data.error}`, { type: data.ok ? 'success' : 'error' });
+        if (data.ok) {
+          resultEl.textContent = `¡Éxito! Token ID: ${data.tokenId}. Serials: ${data.serials.join(', ')}`;
+        } else {
+          resultEl.textContent = `Error: ${data.error || JSON.stringify(data)}`;
+        }
+      }
     } catch (e) {
       (document.getElementById('publish-result') || {}).textContent = 'Error: ' + e.message;
     } finally {
@@ -239,11 +256,19 @@ window.addEventListener('DOMContentLoaded', () => {
   const btnSp = document.getElementById('btn-publish-spotify');
   if (btnSp) btnSp.addEventListener('click', async () => {
     const albumId = btnSp.dataset.albumId;
-    if (!albumId) { alert('Crea un álbum primero.'); return; }
+    if (!albumId) { toast('Crea un álbum primero.', { type: 'error' }); return; }
     btnSp.disabled = true; const prev = btnSp.textContent; btnSp.textContent = 'Publicando...';
     try {
       const data = await callApi('/api/spotify/publish', { method: 'POST', body: JSON.stringify({ albumId }) });
-      (document.getElementById('publish-result') || {}).textContent = data.message || JSON.stringify(data);
+      const resultEl = document.getElementById('publish-result');
+      if (resultEl) {
+        toast(data.ok ? `Publicado en Spotify (simulado)` : `Error: ${data.error}`, { type: data.ok ? 'success' : 'error' });
+        if (data.ok) {
+          resultEl.textContent = `¡Éxito! Token ID: ${data.tokenId}. Serials: ${data.serials.join(', ')}`;
+        } else {
+          resultEl.textContent = `Error: ${data.error || JSON.stringify(data)}`;
+        }
+      }
     } catch (e) {
       (document.getElementById('publish-result') || {}).textContent = 'Error: ' + e.message;
     } finally {
@@ -264,16 +289,16 @@ window.addEventListener('DOMContentLoaded', () => {
   if (btnBatch) btnBatch.addEventListener('click', async () => {
     const semi = parseInt((document.getElementById('batch-semi') || { value: '0' }).value || '0', 10);
     const preserve = !!((document.getElementById('batch-preserve') || {}).checked);
-    if (selectedFiles.size === 0) { alert('No hay pistas seleccionadas.'); return; }
+    if (selectedFiles.size === 0) { toast('No hay pistas seleccionadas.', { type: 'error' }); return; }
     btnBatch.disabled = true; const prev = btnBatch.textContent; btnBatch.textContent = 'Procesando...';
     try {
       for (const f of Array.from(selectedFiles)) {
         await callApi('/api/effects/pitch-shift', { method: 'POST', body: JSON.stringify({ file: f, semitones: semi, preserveDuration: preserve }) });
       }
       await refreshList();
-      alert('Pitch Shift aplicado a seleccionados.');
+      toast('Pitch Shift aplicado a seleccionados.', { type: 'success' });
     } catch (e) {
-      alert('Error: ' + e.message);
+      toast('Error: ' + e.message, { type: 'error' });
     } finally {
       btnBatch.disabled = false; btnBatch.textContent = prev;
     }
@@ -296,7 +321,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const btnAssocCheck = document.getElementById('btn-assoc-check');
   if (btnAssocCheck) btnAssocCheck.addEventListener('click', async () => {
     const { accountId, tokenId } = getHInputs();
-    if (!accountId || !tokenId) { alert('Completa accountId y tokenId'); return; }
+    if (!accountId || !tokenId) { toast('Completa accountId y tokenId', { type: 'error' }); return; }
     setHStatus('Consultando asociación...');
     try {
       const data = await callApi('/api/hedera/associate/check', { method: 'POST', body: JSON.stringify({ accountId, tokenId }) });
@@ -309,7 +334,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const btnAssocPrepare = document.getElementById('btn-assoc-prepare');
   if (btnAssocPrepare) btnAssocPrepare.addEventListener('click', async () => {
     const { accountId, tokenId } = getHInputs();
-    if (!accountId || !tokenId) { alert('Completa accountId y tokenId'); return; }
+    if (!accountId || !tokenId) { toast('Completa accountId y tokenId', { type: 'error' }); return; }
     setHStatus('Preparando transacción...');
     try {
       const data = await callApi('/api/hedera/associate/prepare', { method: 'POST', body: JSON.stringify({ accountId, tokenId }) });
@@ -324,7 +349,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const btnAssocSubmit = document.getElementById('btn-assoc-submit');
   if (btnAssocSubmit) btnAssocSubmit.addEventListener('click', async () => {
     const base64 = (document.getElementById('assoc-tx-base64') || {}).value || '';
-    if (!base64) { alert('Pega la transacción firmada (base64).'); return; }
+    if (!base64) { toast('Pega la transacción firmada (base64).', { type: 'error' }); return; }
     setHStatus('Enviando a red...');
     try {
       const data = await callApi('/api/hedera/associate/submit', { method: 'POST', body: JSON.stringify({ signedTransaction: base64 }) });
@@ -337,7 +362,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const btnNftOwner = document.getElementById('btn-nft-owner');
   if (btnNftOwner) btnNftOwner.addEventListener('click', async () => {
     const { tokenId, serial } = getHInputs();
-    if (!tokenId || serial === '') { alert('Completa tokenId y serial'); return; }
+    if (!tokenId || serial === '') { toast('Completa tokenId y serial', { type: 'error' }); return; }
     setHStatus('Consultando Mirror Node...');
     try {
       const params = new URLSearchParams({ tokenId, serial: String(serial) });
@@ -352,7 +377,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (btnNftList) btnNftList.addEventListener('click', async () => {
     const listPre = document.getElementById('hedera-list-pre');
     const { accountId, tokenId } = getHInputs();
-    if (!accountId || !tokenId) { alert('Completa accountId y tokenId'); return; }
+    if (!accountId || !tokenId) { toast('Completa accountId y tokenId', { type: 'error' }); return; }
     setHStatus('Listando NFTs de la cuenta...');
     try {
       const data = await callApi('/api/hedera/nft/list', { method: 'POST', body: JSON.stringify({ accountId, tokenId }) });
@@ -397,7 +422,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (btnNftTransfer) btnNftTransfer.addEventListener('click', async () => {
     const { tokenId, serial } = getHInputs();
     const to = (document.getElementById('hedera-to') || {}).value || '';
-    if (!tokenId || !serial || !to) { alert('Completa tokenId, serial y destino'); return; }
+    if (!tokenId || !serial || !to) { toast('Completa tokenId, serial y destino', { type: 'error' }); return; }
     setHStatus('Transfiriendo NFT...');
     try {
       const data = await callApi('/api/hedera/transfer', { method: 'POST', body: JSON.stringify({ tokenId, serial: Number(serial), to }) });
@@ -442,7 +467,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const btnMy = document.getElementById('btn-nft-my');
   if (btnMy) btnMy.addEventListener('click', async () => {
     const { accountId, tokenId } = getHInputs();
-    if (!accountId || !tokenId) { alert('Completa accountId y tokenId'); return; }
+    if (!accountId || !tokenId) { toast('Completa accountId y tokenId', { type: 'error' }); return; }
     setHStatus('Cargando tus NFTs...');
     try {
       const data = await callApi('/api/hedera/nft/list', { method: 'POST', body: JSON.stringify({ accountId, tokenId }) });
@@ -560,7 +585,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const symbol = (splitSymbolEl && splitSymbolEl.value) || 'AETH';
     const treasuryAccountId = (splitTreasuryEl && splitTreasuryEl.value) || '';
     const splits = getSplits();
-    if (!treasuryAccountId || !/^\d+\.\d+\.\d+$/.test(treasuryAccountId)) { alert('Tesorería inválida'); return; }
+    if (!treasuryAccountId || !/^\d+\.\d+\.\d+$/.test(treasuryAccountId)) { toast('Tesorería inválida', { type: 'error' }); return; }
     const stop = setLoading(btnSplitCreate, 'Creando...');
     try {
       setSplit('Creando token en Hedera...');
@@ -575,7 +600,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   if (btnSplitMint) btnSplitMint.addEventListener('click', async () => {
-    if (!lastTokenId) { alert('Crea primero la colección'); return; }
+    if (!lastTokenId) { toast('Crea primero la colección', { type: 'error' }); return; }
     let meta = (splitMetadataEl && splitMetadataEl.value) || '';
     let metadataJson = undefined;
     if (meta) {
@@ -598,7 +623,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (btnSplitAssociate) btnSplitAssociate.addEventListener('click', async () => {
     const accountId = (document.getElementById('hedera-account') || {}).value || '';
     const accountPrivateKey = (document.getElementById('hedera-private-key') || {}).value || '';
-    if (!/^\d+\.\d+\.\d+$/.test(accountId)) { alert('Ingresa un AccountId válido en la sección Hedera'); return; }
+    if (!/^\d+\.\d+\.\d+$/.test(accountId)) { toast('Ingresa un AccountId válido en la sección Hedera', { type: 'error' }); return; }
     const stop = setLoading(btnSplitAssociate, 'Asociando...');
     try {
       const body = { tokenId: lastTokenId, accountId };
@@ -612,7 +637,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   if (btnSplitTransfer) btnSplitTransfer.addEventListener('click', async () => {
     const to = (splitToEl && splitToEl.value) || '';
-    if (!/^\d+\.\d+\.\d+$/.test(to)) { alert('Ingresa una cuenta destino válida'); return; }
+    if (!/^\d+\.\d+\.\d+$/.test(to)) { toast('Ingresa una cuenta destino válida', { type: 'error' }); return; }
     const stop = setLoading(btnSplitTransfer, 'Transfiriendo...');
     try {
       const resp = await callApi('/api/hedera/nft/transfer', { method: 'POST', body: JSON.stringify({ tokenId: lastTokenId, serial: lastSerial, toAccountId: to }) });
@@ -905,7 +930,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (btnMix) btnMix.addEventListener('click', async () => {
     const files = Array.from(selectedFiles);
     if (files.length < 2) {
-      alert('Selecciona al menos 2 pistas para mezclar.');
+      toast('Selecciona al menos 2 pistas para mezclar.', { type: 'error' });
       return;
     }
     const fileA = files[0];
@@ -924,7 +949,7 @@ window.addEventListener('DOMContentLoaded', () => {
         lastMixFile = data.file;
         const btnShare = document.getElementById('btn-share-last');
         if (btnShare) btnShare.disabled = false;
-        alert(`Mix creado: ${data.file}`);
+        toast(`Mix creado: ${data.file}`, { type: 'success' });
         await refreshList();
         // Analytics
         await callApi('/api/analytics/event', {
@@ -932,10 +957,10 @@ window.addEventListener('DOMContentLoaded', () => {
           body: JSON.stringify({ type: 'mix_create', sessionId: 'web', file: data.file, data: { fileA, fileB, durSec } })
         });
       } else {
-        alert('Error: ' + (data.error || 'Falló el mix'));
+        toast('Error: ' + (data.error || 'Falló el mix'), { type: 'error' });
       }
     } catch (e) {
-      alert('Error: ' + e.message);
+      toast('Error: ' + e.message, { type: 'error' });
     } finally {
       btnMix.disabled = false;
       btnMix.textContent = prevText;
@@ -946,20 +971,20 @@ window.addEventListener('DOMContentLoaded', () => {
   const btnShare = document.getElementById('btn-share-last');
   if (btnShare) btnShare.addEventListener('click', async () => {
     if (!lastMixFile) {
-      alert('No hay mix reciente para compartir.');
+      toast('No hay mix reciente para compartir.', { type: 'error' });
       return;
     }
     const url = `${location.origin}/output/${lastMixFile}`;
     try {
       await navigator.clipboard.writeText(url);
-      alert(`URL copiada al portapapeles:\n${url}`);
+      toast(`URL copiada al portapapeles!`);
       // Analytics
       await callApi('/api/analytics/event', {
         method: 'POST',
         body: JSON.stringify({ type: 'share_mix', sessionId: 'web', file: lastMixFile, data: { url } })
       });
     } catch (e) {
-      alert(`URL del mix:\n${url}\n\n(No se pudo copiar automáticamente)`);
+      toast(`URL del mix: ${url} (No se pudo copiar)`, { duration: 5000 });
     }
   });
 
@@ -972,7 +997,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (btnAiTrans) btnAiTrans.addEventListener('click', async () => {
     const files = Array.from(selectedFiles);
     if (files.length < 2) {
-      alert('Selecciona al menos 2 pistas para sugerir transición.');
+      toast('Selecciona al menos 2 pistas para sugerir transición.', { type: 'error' });
       return;
     }
     const fileA = files[0];
@@ -990,12 +1015,12 @@ window.addEventListener('DOMContentLoaded', () => {
         currentPlan = data.plan;
         if (planPre) planPre.textContent = JSON.stringify(data, null, 2);
         if (btnApplyPlan) btnApplyPlan.disabled = false;
-        alert(`IA sugiere crossfade de ${data.plan.crossfadeSec}s`);
+        toast(`IA sugiere crossfade de ${data.plan.crossfadeSec}s`);
       } else {
-        alert('Error: ' + (data.error || 'Falló análisis IA'));
+        toast('Error: ' + (data.error || 'Falló análisis IA'), { type: 'error' });
       }
     } catch (e) {
-      alert('Error: ' + e.message);
+      toast('Error: ' + e.message, { type: 'error' });
     } finally {
       btnAiTrans.disabled = false;
       btnAiTrans.textContent = prevText;
@@ -1005,12 +1030,12 @@ window.addEventListener('DOMContentLoaded', () => {
   // APLICAR plan IA
   if (btnApplyPlan) btnApplyPlan.addEventListener('click', async () => {
     if (!currentPlan) {
-      alert('No hay plan de IA para aplicar.');
+      toast('No hay plan de IA para aplicar.', { type: 'error' });
       return;
     }
     const files = Array.from(selectedFiles);
     if (files.length < 2) {
-      alert('Selecciona las pistas del plan.');
+      toast('Selecciona las pistas del plan.', { type: 'error' });
       return;
     }
     const fileA = files[0];
@@ -1028,7 +1053,7 @@ window.addEventListener('DOMContentLoaded', () => {
         lastMixFile = data.file;
         const btnShare = document.getElementById('btn-share-last');
         if (btnShare) btnShare.disabled = false;
-        alert(`Plan IA aplicado: ${data.file}`);
+        toast(`Plan IA aplicado: ${data.file}`, { type: 'success' });
         await refreshList();
         // Analytics
         await callApi('/api/analytics/event', {
@@ -1036,10 +1061,10 @@ window.addEventListener('DOMContentLoaded', () => {
           body: JSON.stringify({ type: 'ai_plan_applied', sessionId: 'web', file: data.file, data: { plan: currentPlan } })
         });
       } else {
-        alert('Error: ' + (data.error || 'Falló aplicar plan'));
+        toast('Error: ' + (data.error || 'Falló aplicar plan'), { type: 'error' });
       }
     } catch (e) {
-      alert('Error: ' + e.message);
+      toast('Error: ' + e.message, { type: 'error' });
     } finally {
       btnApplyPlan.disabled = false;
       btnApplyPlan.textContent = prevText;
@@ -1055,12 +1080,12 @@ window.addEventListener('DOMContentLoaded', () => {
       const data = await callApi('/api/analytics/summary');
       if (data.ok) {
         if (analyticsPre) analyticsPre.textContent = JSON.stringify(data, null, 2);
-        alert(`Analytics: ${data.events} eventos registrados`);
+        toast(`Analytics: ${data.events} eventos registrados`);
       } else {
-        alert('Error: ' + (data.error || 'Falló obtener analytics'));
+        toast('Error: ' + (data.error || 'Falló obtener analytics'), { type: 'error' });
       }
     } catch (e) {
-      alert('Error: ' + e.message);
+      toast('Error: ' + e.message, { type: 'error' });
     }
   });
 
@@ -1215,27 +1240,7 @@ window.addEventListener('DOMContentLoaded', () => {
            trackLabel.textContent = display;
            try { renderTrackLabelWithDuration && renderTrackLabelWithDuration(); } catch {}
          }
-         if (!window.__toast) {
-           window.__toast = function(msg) {
-             let cont = document.getElementById('toast-container');
-             if (!cont) {
-               cont = document.createElement('div');
-               cont.id = 'toast-container';
-               cont.className = 'toast-container';
-               document.body.appendChild(cont);
-             }
-             const div = document.createElement('div');
-             div.className = 'toast';
-             div.textContent = msg;
-             cont.appendChild(div);
-             requestAnimationFrame(() => div.classList.add('show'));
-             setTimeout(() => {
-               div.classList.remove('show');
-               setTimeout(() => div.remove(), 250);
-             }, 2500);
-           }
-         }
-         window.__toast && window.__toast(`Cargada en Deck ${letter}: ${display}`);
+         toast(`Cargada en Deck ${letter}: ${display}`);
        } catch {}
      }
 
@@ -1283,10 +1288,10 @@ window.addEventListener('DOMContentLoaded', () => {
             if (json && json.ok && json.url) {
               deck.setSrc(json.url);
             } else {
-              window.__toast && window.__toast(`Error al subir: ${json?.error || resp.status}`);
+              toast(`Error al subir: ${json?.error || resp.status}`, { type: 'error' });
             }
           } else {
-            window.__toast && window.__toast('Formato no soportado. Usa WAV/MP3/OGG/FLAC');
+            toast('Formato no soportado. Usa WAV/MP3/OGG/FLAC', { type: 'error' });
           }
         }
       } catch {}
@@ -1321,7 +1326,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const trackLabel = document.getElementById(`deck${letter}-track`);
     if (trackLabel) trackLabel.textContent = '';
 
-    if (window.__toast && letter) window.__toast(`Deck ${letter} vaciado`);
+    if (letter) toast(`Deck ${letter} vaciado`);
   }
 
   // Crossfader
@@ -1346,13 +1351,13 @@ window.addEventListener('DOMContentLoaded', () => {
   const btnLoadA1 = document.getElementById('deckA-load-selected');
   if (btnLoadA1) btnLoadA1.addEventListener('click', () => {
     const f = getSelectedAt(0);
-    if (!f) { alert('Selecciona al menos 1 pista en la lista de salidas.'); return; }
+    if (!f) { toast('Selecciona al menos 1 pista en la lista de salidas.', { type: 'error' }); return; }
     deckA && deckA.setSrc(`/output/${f}`);
   });
   const btnLoadB1 = document.getElementById('deckB-load-selected');
   if (btnLoadB1) btnLoadB1.addEventListener('click', () => {
     const f = getSelectedAt(1) || getSelectedAt(0);
-    if (!f) { alert('Selecciona al menos 2 pistas (o una) en la lista de salidas.'); return; }
+    if (!f) { toast('Selecciona al menos 1 pista en la lista de salidas.', { type: 'error' }); return; }
     deckB && deckB.setSrc(`/output/${f}`);
   });
   const btnLoadALocal = document.getElementById('deckA-load-local');
@@ -1416,9 +1421,9 @@ window.addEventListener('DOMContentLoaded', () => {
             await refreshList();
             return `/output/${resp.file}`;
           } else {
-            alert('No se pudo guardar: ' + (resp.error || 'desconocido'));
+            toast('No se pudo guardar: ' + (resp.error || 'desconocido'), { type: 'error' });
           }
-        } catch (e) { alert('Error: ' + e.message); }
+        } catch (e) { toast('Error: ' + e.message, { type: 'error' }); }
         return null;
       }
       mixerResults.querySelectorAll('.mixer-save-a').forEach(btn => {
@@ -1438,7 +1443,7 @@ window.addEventListener('DOMContentLoaded', () => {
         });
       });
     } catch (e) {
-      alert('Error búsqueda: ' + e.message);
+      toast('Error búsqueda: ' + e.message, { type: 'error' });
     } finally {
       btnMixerSearch.disabled = false; btnMixerSearch.textContent = prev;
     }
@@ -1497,9 +1502,9 @@ window.addEventListener('DOMContentLoaded', () => {
             await refreshList();
             return `/output/${resp.file}`;
           } else {
-            alert('No se pudo guardar: ' + (resp.error || 'desconocido'));
+            toast('No se pudo guardar: ' + (resp.error || 'desconocido'), { type: 'error' });
           }
-        } catch (e) { alert('Error: ' + e.message); }
+        } catch (e) { toast('Error: ' + e.message, { type: 'error' }); }
         return null;
       }
       githubResults.querySelectorAll('.gh-save-a').forEach(btn => {
@@ -1519,7 +1524,7 @@ window.addEventListener('DOMContentLoaded', () => {
         });
       });
     } catch (e) {
-      alert('Error GitHub: ' + e.message);
+      toast('Error GitHub: ' + e.message, { type: 'error' });
     } finally {
       btnGithubSearch.disabled = false; btnGithubSearch.textContent = prev;
     }
@@ -1531,7 +1536,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const itunesResults = document.getElementById('itunes-results');
   if (btnItunesSearch) btnItunesSearch.addEventListener('click', async () => {
     const q = (itunesQueryEl && itunesQueryEl.value) || '';
-    if (!q) { alert('Ingresa un término de búsqueda.'); return; }
+    if (!q) { toast('Ingresa un término de búsqueda.', { type: 'error' }); return; }
     btnItunesSearch.disabled = true; const prev = btnItunesSearch.textContent; btnItunesSearch.textContent = 'Buscando iTunes...';
     try {
       const url = `/api/music/search/itunes?term=${encodeURIComponent(q)}&limit=15`;
@@ -1581,9 +1586,9 @@ window.addEventListener('DOMContentLoaded', () => {
             await refreshList();
             return `/output/${resp.file}`;
           } else {
-            alert('No se pudo guardar: ' + (resp.error || 'desconocido'));
+            toast('No se pudo guardar: ' + (resp.error || 'desconocido'), { type: 'error' });
           }
-        } catch (e) { alert('Error: ' + e.message); }
+        } catch (e) { toast('Error: ' + e.message, { type: 'error' }); }
         return null;
       }
       itunesResults.querySelectorAll('.it-save-a').forEach(btn => {
@@ -1603,7 +1608,7 @@ window.addEventListener('DOMContentLoaded', () => {
         });
       });
     } catch (e) {
-      alert('Error iTunes: ' + e.message);
+      toast('Error iTunes: ' + e.message, { type: 'error' });
     } finally {
       btnItunesSearch.disabled = false; btnItunesSearch.textContent = prev;
     }
@@ -1646,7 +1651,7 @@ window.addEventListener('DOMContentLoaded', () => {
           b.disabled = true; b.textContent = '...';
           await handler();
         } catch (e) {
-          alert('Error: ' + (e?.message || String(e)));
+          toast('Error: ' + (e?.message || String(e)), { type: 'error' });
         } finally {
           b.disabled = false; b.textContent = prev;
         }
@@ -1709,19 +1714,19 @@ window.addEventListener('DOMContentLoaded', () => {
             if (plan.durationSec) payload.durationSec = Math.round(plan.durationSec);
             await callApi('/api/generate/composition', { method: 'POST', body: JSON.stringify(payload) });
             await refreshList();
-            const extra = (payload.bpm || payload.key || payload.scale) ? `\nParámetros: ${JSON.stringify(payload)}` : '';
-            alert('Composición generada.' + extra);
+            const extra = (payload.bpm || payload.key || payload.scale) ? ` con parámetros del plan.` : '.';
+            toast('Composición generada' + extra, { type: 'success' });
           });
           // Nuevo: Drums y Synth
           const btnDrums = mkBtn('Generar Drums', async () => {
             await callApi('/api/generate/drums', { method: 'POST', body: '{}' });
             await refreshList();
-            alert('Drums generados.');
+            toast('Drums generados.', { type: 'success' });
           });
           const btnSynth = mkBtn('Generar Synth', async () => {
             await callApi('/api/generate/synth', { method: 'POST', body: '{}' });
             await refreshList();
-            alert('Synth generado.');
+            toast('Synth generado.', { type: 'success' });
           });
           // Nuevo: Generar TODO (Composición + Drums + Synth)
           const btnAll = mkBtn('Generar TODO', async () => {
@@ -1735,7 +1740,7 @@ window.addEventListener('DOMContentLoaded', () => {
             await callApi('/api/generate/drums', { method: 'POST', body: '{}' });
             await callApi('/api/generate/synth', { method: 'POST', body: '{}' });
             await refreshList();
-            alert('Listo: composición + drums + synth generados.');
+            toast('Listo: composición + drums + synth generados.', { type: 'success' });
           });
           // Nuevo: Generar TODO + KeySnap (usa plan)
           const btnAllKey = mkBtn('Generar TODO + KeySnap', async () => {
@@ -1762,11 +1767,11 @@ window.addEventListener('DOMContentLoaded', () => {
               compFile = json.file || compFile;
             }
             await refreshList();
-            alert('Listo: composición + drums + synth generados' + (compFile ? ' (KeySnap aplicado si había plan).' : '.'));
+            toast('Listo: composición + drums + synth generados' + (compFile ? ' (KeySnap aplicado).' : '.'), { type: 'success' });
           });
           const btnKey = mkBtn('Aplicar KeySnap', async () => {
             const f = firstSelectedFile();
-            if (!f) { alert('Selecciona una pista en la lista de salidas.'); return; }
+            if (!f) { toast('Selecciona una pista en la lista de salidas.', { type: 'error' }); return; }
             const plan = extractPlanFromText(out && out.textContent);
             const KEY_TO_SEMITONE = { C: 0, 'C#': 1, Db: 1, D: 2, 'D#': 3, Eb: 3, E: 4, F: 5, 'F#': 6, Gb: 6, G: 7, 'G#': 8, Ab: 8, A: 9, 'A#': 10, Bb: 10, B: 11 };
             const defaultKey = (plan.key && KEY_TO_SEMITONE[plan.key]) != null ? KEY_TO_SEMITONE[plan.key] : 0;
@@ -1779,16 +1784,16 @@ window.addEventListener('DOMContentLoaded', () => {
             const json = await resp.json();
             if (!resp.ok || !json.ok) throw new Error(json.error || 'KeySnap failed');
             await refreshList();
-            alert('KeySnap listo: ' + json.file);
+            toast('KeySnap listo: ' + json.file, { type: 'success' });
           });
           const btnLoadA = mkBtn('Cargar en Deck A', async () => {
             const f = firstSelectedFile();
-            if (!f) { alert('Selecciona una pista en la lista de salidas.'); return; }
+            if (!f) { toast('Selecciona una pista en la lista de salidas.', { type: 'error' }); return; }
             if (typeof deckA !== 'undefined' && deckA) deckA.setSrc(`/output/${f}`);
           });
           const btnLoadB = mkBtn('Cargar en Deck B', async () => {
             const f = firstSelectedFile();
-            if (!f) { alert('Selecciona una pista en la lista de salidas.'); return; }
+            if (!f) { toast('Selecciona una pista en la lista de salidas.', { type: 'error' }); return; }
             if (typeof deckB !== 'undefined' && deckB) deckB.setSrc(`/output/${f}`);
           });
           c.append(btnAllKey, btnAll, btnComp, btnDrums, btnSynth, btnKey, btnLoadA, btnLoadB);
@@ -2469,7 +2474,7 @@ window.addEventListener('DOMContentLoaded', () => {
       const { sum, count } = getSum();
       if (count > 0 && sum !== 10000){
         const cont = window.confirm(`El BPS total es ${sum} (debería sumar 10000). ¿Deseas continuar?`);
-        if (!cont){ e.stopImmediatePropagation(); e.preventDefault(); }
+        if (!cont) { e.stopImmediatePropagation(); e.preventDefault(); }
       }
     }, true);
   } catch {}
@@ -2571,33 +2576,137 @@ window.addEventListener('DOMContentLoaded', () => {
         lastSavedId = data.id || '';
         showResult({ action:'credits/save', ...data });
         try { await fetch('/api/analytics/event', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ type:'credits_ui_save', data:{ id:lastSavedId } }) }); } catch {}
-        alert('Créditos guardados correctamente');
+        toast('Créditos guardados correctamente', { type: 'success' });
       } catch (e) {
         showResult({ error: e?.message || String(e) });
-        alert('Error al guardar: ' + (e?.message || e));
+        toast('Error al guardar: ' + (e?.message || e), { type: 'error' });
       }
     });
 
     btnEpk.addEventListener('click', async ()=>{
       try {
         let payload;
-        if (lastSavedId) payload = { id: lastSavedId };
-        else {
-          const m = collectManifest();
-          if (!m.title || !m.artist) throw new Error('Completa Título y Artista o guarda primero');
-          payload = m;
+        if (lastSavedId) {
+            payload = { id: lastSavedId };
+        } else {
+            const m = collectManifest();
+            if (!m.title || !m.artist) throw new Error('Completa Título y Artista o guarda primero');
+            payload = m;
         }
-        const resp = await fetch('/api/epk/generate', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
-        const data = await resp.json().catch(()=>({}));
+        const resp = await fetch('/api/epk/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        const data = await resp.json().catch(() => ({}));
         if (!resp.ok || !data.ok) throw new Error(data.error || 'No se pudo generar EPK');
-        showResult({ action:'epk/generate', ...data });
-        if (epkLink && data.path){ epkLink.textContent = data.path; epkLink.href = data.path; }
-        try { await fetch('/api/analytics/event', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ type:'epk_ui_generate', data:{ id: data.id, path: data.path } }) }); } catch {}
-        alert('EPK generado correctamente');
+        showResult({ action: 'epk/generate', ...data });
+        if (epkLink && data.path) { epkLink.textContent = data.path; epkLink.href = data.path; }
+        try { await fetch('/api/analytics/event', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'epk_ui_generate', data: { id: data.id, path: data.path } }) }); } catch { }
+        toast('EPK generado correctamente', { type: 'success' });
       } catch (e) {
         showResult({ error: e?.message || String(e) });
-        alert('Error al generar EPK: ' + (e?.message || e));
+        toast('Error al generar EPK: ' + (e?.message || e), { type: 'error' });
       }
     });
   } catch (err) { console.warn('credits ui wiring error', err); }
+})();
+
+// --- Lógica para el panel de Generación Creativa ---
+(function() {
+    const creativeGenerateBtn = document.getElementById('generate-creative-btn');
+    const creativeAudioPlayer = document.getElementById('creative-audio-player');
+    const exportMidiBtn = document.getElementById('export-midi-btn');
+
+    const keySelect = document.getElementById('key-select');
+    const scaleSelect = document.getElementById('scale-select');
+    const tempoSlider = document.getElementById('tempo-slider');
+    const tempoValue = document.getElementById('tempo-value');
+
+    let lastGeneratedNotes = null; // Almacenará las notas para la exportación
+
+    if (tempoSlider) {
+        tempoSlider.addEventListener('input', () => {
+            tempoValue.textContent = tempoSlider.value;
+        });
+    }
+
+    if (creativeGenerateBtn) {
+        creativeGenerateBtn.addEventListener('click', async () => {
+            console.log('Iniciando generación creativa...');
+            creativeGenerateBtn.textContent = 'Generando...';
+            creativeGenerateBtn.disabled = true;
+            exportMidiBtn.disabled = true;
+
+            const params = {
+                key: keySelect.value,
+                scale: scaleSelect.value,
+                tempo: parseInt(tempoSlider.value, 10),
+            };
+
+            try {
+                // Este es el nuevo endpoint que crearemos en el backend
+                const response = await fetch('/generate-creative', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(params),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Error en el servidor');
+                }
+
+                const data = await response.json();
+                
+                // El backend ahora devuelve la URL del audio y los datos de las notas
+                creativeAudioPlayer.src = data.audioUrl;
+                creativeAudioPlayer.play();
+                
+                lastGeneratedNotes = data.notes; // Guardamos las notas para el MIDI
+                exportMidiBtn.disabled = false; // Habilitamos la exportación
+
+            } catch (error) {
+                console.error('Error en la generación creativa:', error);
+                toast(`Error: ${error.message}`, { type: 'error' });
+            } finally {
+                creativeGenerateBtn.textContent = 'Generar Música';
+                creativeGenerateBtn.disabled = false;
+            }
+        });
+    }
+
+    if (exportMidiBtn) {
+        exportMidiBtn.addEventListener('click', async () => {
+            if (!lastGeneratedNotes) {
+                toast('Primero debes generar música para poder exportarla.', { type: 'error' });
+                return;
+            }
+
+            try {
+                const response = await fetch('/export-midi', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        notes: lastGeneratedNotes,
+                        tempo: parseInt(tempoSlider.value, 10)
+                    }),
+                });
+
+                if (!response.ok) throw new Error('Error al exportar a MIDI');
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'aether-sound-creative.mid';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                a.remove();
+                toast('Archivo MIDI descargado.', { type: 'success' });
+
+            } catch (error) {
+                console.error('Error al exportar a MIDI:', error);
+                toast('No se pudo exportar el archivo MIDI.', { type: 'error' });
+            }
+        });
+    }
 })();
