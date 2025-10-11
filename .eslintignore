@@ -1,0 +1,10 @@
+node_modules/
+mixxx/
+public/
+assets/
+uploads/
+output/
+tests/
+tmp/
+mixxx/
+mixxx/**

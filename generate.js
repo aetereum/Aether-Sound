@@ -1,5 +1,5 @@
 const express = require('express');
-const path = require('path');
+const path = require('node:path');
 const router = express.Router();
 
 module.exports = (OUTPUT_DIR) => {
@@ -15,9 +15,9 @@ module.exports = (OUTPUT_DIR) => {
       if (durationSec !== undefined && durationSec !== null && !isNaN(Number(durationSec))) payload.durationSec = Number(durationSec);
       const filePath = await gen.generateComposition(payload);
       res.json({ ok: true, file: path.basename(filePath) });
-    } catch (e) {
-      console.error(e);
-      res.status(500).json({ ok: false, error: e.message });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ ok: false, error: err.message });
     }
   });
 
@@ -27,9 +27,9 @@ module.exports = (OUTPUT_DIR) => {
       const gen = require('../render-simple-synth');
       const filePath = await gen.generateSynth({ outputDir: OUTPUT_DIR });
       res.json({ ok: true, file: path.basename(filePath) });
-    } catch (e) {
-      console.error(e);
-      res.status(500).json({ ok: false, error: e.message });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ ok: false, error: err.message });
     }
   });
 
@@ -39,9 +39,9 @@ module.exports = (OUTPUT_DIR) => {
       const gen = require('../drum-generator');
       const filePath = await gen.generateDrums({ outputDir: OUTPUT_DIR });
       res.json({ ok: true, file: path.basename(filePath) });
-    } catch (e) {
-      console.error(e);
-      res.status(500).json({ ok: false, error: e.message });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ ok: false, error: err.message });
     }
   });
 

@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 const WaveFile = require('wavefile').WaveFile;
 
 function writeWav({ samples, sampleRate = 44100, channels = 1, bitDepth = 16, filePath }) {

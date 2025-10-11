@@ -1,5 +1,5 @@
-const path = require('path');
-const { writeWav } = require('./audio-renderer');
+const path = require('node:path');
+const { writeWav } = require('../utils/audio-renderer');
 
 function click(t, freq) {
   // breve impulso con decaimiento

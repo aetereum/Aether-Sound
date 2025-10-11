@@ -1,6 +1,6 @@
 const express = require('express');
-const path = require('path');
-const fs = require('fs/promises');
+const path = require('node:path');
+const fs = require('node:fs/promises');
 const { Client, PrivateKey, PublicKey, AccountId, TokenId, TokenCreateTransaction, TokenType, TokenSupplyType, TokenMintTransaction, TokenAssociateTransaction, TransferTransaction, Hbar, AccountInfoQuery, AccountBalanceQuery, KeyList, CustomRoyaltyFee, CustomFixedFee, Transaction, AccountCreateTransaction, TokenNftInfoQuery, NftId } = require('@hashgraph/sdk');
 
 const router = express.Router();
@@ -22,7 +22,7 @@ module.exports = (OUTPUT_DIR, getClient, slugify) => {
       // 1. Crear la colección de NFTs para el álbum
       const tokenTx = await new TokenCreateTransaction()
         .setTokenName(manifest.title)
-        .setTokenSymbol(manifest.artist.slice(0, 4).toUpperCase() + 'ALB')
+        .setTokenSymbol(`${manifest.artist.slice(0, 4).toUpperCase()}ALB`)
         .setTokenType(TokenType.NonFungibleUnique)
         .setDecimals(0)
         .setInitialSupply(0)
@@ -67,9 +67,9 @@ module.exports = (OUTPUT_DIR, getClient, slugify) => {
         serials,
       });
 
-    } catch (e) {
-      console.error('Hedera mint error:', e);
-      res.status(500).json({ ok: false, error: 'Fallo al mintear en Hedera: ' + (e?.message || e) });
+    } catch (err) {
+      console.error('Hedera mint error:', err);
+      res.status(500).json({ ok: false, error: `Fallo al mintear en Hedera: ${err?.message || err}` });
     }
   });
 
@@ -92,8 +92,12 @@ module.exports = (OUTPUT_DIR, getClient, slugify) => {
       const projectPubKey = operatorKey.publicKey;
       let artistPubKey = null;
       if (artistPublicKey) {
-        try { artistPubKey = PublicKey.fromString(artistPublicKey); } catch (_) {
-          try { artistPubKey = PublicKey.fromBytes(Buffer.from(artistPublicKey.replace(/^0x/i, ''), 'hex')); } catch (e) {
+        try {
+          artistPubKey = PublicKey.fromString(artistPublicKey);
+        } catch (_) {
+          try {
+            artistPubKey = PublicKey.fromBytes(Buffer.from(artistPublicKey.replace(/^0x/i, ''), 'hex'));
+          } catch (err) {
             return res.status(400).json({ ok: false, error: 'artistPublicKey inválida' });
           }
         }
@@ -101,8 +105,8 @@ module.exports = (OUTPUT_DIR, getClient, slugify) => {
 
       const mode = (governance?.mode || 'project').toLowerCase();
       let supplyKey = projectPubKey;
-      let adminKey = projectPubKey;
-      let feeScheduleKey = projectPubKey;
+      const adminKey = projectPubKey;
+      const feeScheduleKey = projectPubKey;
 
       if (mode === 'artist') {
         if (!artistPubKey) {
@@ -120,7 +124,7 @@ module.exports = (OUTPUT_DIR, getClient, slugify) => {
         }
       }
 
-      let treasuryId = client.operatorAccountId;
+      const treasuryId = client.operatorAccountId;
       if (treasuryAccountId && treasuryAccountId !== client.operatorAccountId.toString()) {
         console.warn('Solicitud de tesorería distinta al operador; usando operador como treasury');
       }
@@ -177,9 +181,9 @@ module.exports = (OUTPUT_DIR, getClient, slugify) => {
         royalties: { artistBps, projectBps, minHbar },
         notes: treasuryAccountId && treasuryAccountId !== client.operatorAccountId.toString() ? 'Se ignoró treasuryAccountId distinto al operador por falta de firma' : undefined,
       });
-    } catch (e) {
-      console.error('Hedera token/create error:', e?.message || e);
-      res.status(500).json({ ok: false, error: 'Fallo al crear token: ' + (e?.message || e) });
+    } catch (err) {
+      console.error('Hedera token/create error:', err?.message || err);
+      res.status(500).json({ ok: false, error: `Fallo al crear token: ${err?.message || err}` });
     }
   });
 
@@ -205,7 +209,7 @@ module.exports = (OUTPUT_DIR, getClient, slugify) => {
       const feeScheduleKey = operatorKey.publicKey;
 
       // Tesorería
-      let treasuryId = client.operatorAccountId;
+      const treasuryId = client.operatorAccountId;
       if (treasuryAccountId && treasuryAccountId !== client.operatorAccountId.toString()) {
         console.warn('Solicitud de tesorería distinta al operador; usando operador como treasury');
       }
@@ -219,7 +223,9 @@ module.exports = (OUTPUT_DIR, getClient, slugify) => {
         const acct = s?.accountId;
         if (!acct || bps <= 0) continue;
         let collector;
-        try { collector = AccountId.fromString(String(acct)); } catch (_) {
+        try {
+          collector = AccountId.fromString(String(acct));
+        } catch (_) {
           return res.status(400).json({ ok: false, error: `accountId inválido en split: ${acct}` });
         }
         // Verificar que el collector exista en la red para evitar errores INVALID_CUSTOM_FEE_COLLECTOR
@@ -269,9 +275,9 @@ module.exports = (OUTPUT_DIR, getClient, slugify) => {
         treasury: treasuryId.toString(),
         splits: normalizedSplits,
       });
-    } catch (e) {
-      console.error('Hedera split-nft/create error:', e?.message || e);
-      res.status(500).json({ ok: false, error: 'Fallo en split-nft/create: ' + (e?.message || e) });
+    } catch (err) {
+      console.error('Hedera split-nft/create error:', err?.message || err);
+      res.status(500).json({ ok: false, error: `Fallo en split-nft/create: ${err?.message || err}` });
     }
   });
 

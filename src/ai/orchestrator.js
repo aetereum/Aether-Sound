@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 const fetch = require('node-fetch');
 
 const { GEMINI_API_KEY, GEMINI_MODEL = 'gemini-1.5-flash', N8N_WEBHOOK_URL, N8N_AUTH_HEADER, N8N_API_KEY, AI_MAX_ITEMS = '10', DISABLE_N8N } = process.env;
@@ -17,17 +17,19 @@ async function callN8N({ query, maxItems, overrides }) {
   const headers = { 'Content-Type': 'application/json' };
   const authHdr = (overrides && overrides.n8nAuth) || N8N_AUTH_HEADER;
   const apiKey = (overrides && overrides.n8nApiKey) || N8N_API_KEY;
-  if (authHdr) headers['Authorization'] = authHdr;
+  if (authHdr) headers.Authorization = authHdr;
   if (apiKey) headers['X-N8N-API-KEY'] = apiKey;
   const opts = { method: 'POST', headers, body: JSON.stringify(payload) };
 
   // Intento principal: Production URL
-  let res = await fetch(url, opts);
+  const res = await fetch(url, opts);
   if (res.ok) return await res.json();
 
   // Leer texto de error para diagnóstico
   let errText = '';
-  try { errText = await res.text(); } catch (_) {}
+  try {
+    errText = await res.text();
+  } catch (_) {}
 
   // Fallback: si el workflow no está activado, intentar /webhook-test/
   if (url.includes('/webhook/') && !url.includes('/webhook-test/')) {
@@ -36,10 +38,12 @@ async function callN8N({ query, maxItems, overrides }) {
       const resTest = await fetch(testUrl, opts);
       if (resTest.ok) return await resTest.json();
       let errTextTest = '';
-      try { errTextTest = await resTest.text(); } catch (_) {}
+      try {
+        errTextTest = await resTest.text();
+      } catch (_) {}
       throw new Error(`n8n webhook error ${res.status}${errText ? `: ${errText}` : ''} | test ${resTest.status}${errTextTest ? `: ${errTextTest}` : ''}`);
-    } catch (e) {
-      throw e;
+    } catch (err) {
+      throw err;
     }
   }
 
@@ -101,7 +105,7 @@ function toLocalPlan(geminiText) {
   try {
     const m = geminiText.match(/\{[\s\S]*\}/);
     if (m) return JSON.parse(m[0]);
-  } catch (e) {}
+  } catch (err) {}
   // Fallback plan
   return {
     bpm: 100,
@@ -149,12 +153,12 @@ async function searchAndCompose({ query, maxItems = parseInt(AI_MAX_ITEMS), outp
   let sourcesPayload = { sources: [] };
   try {
     sourcesPayload = await callN8N({ query, maxItems, overrides });
-  } catch (e) {
-    console.warn('[n8n] fallo, aplicando fallback wikipedia:', e.message);
+  } catch (err) {
+    console.warn('[n8n] fallo, aplicando fallback wikipedia:', err.message);
     try {
       sourcesPayload = await wikipediaFallback({ query, maxItems });
-    } catch (e2) {
-      console.warn('fallback wikipedia falló:', e2.message);
+    } catch (err) {
+      console.warn('fallback wikipedia falló:', err.message);
       sourcesPayload = { sources: [], note: 'sin fuentes externas (n8n+fallback fallidos)' };
     }
   }
@@ -176,7 +180,7 @@ async function assistModules({ module, context, selectedFiles = [] }) {
   const selText = (Array.isArray(selectedFiles) && selectedFiles.length)
     ? `Archivos seleccionados: ${selectedFiles.join(', ')}`
     : 'Sin selección de archivos.';
-  const sys = `Actúa como asistente experto en música y Web3. Devuelve respuestas breves y accionables en español. Siempre incluye una lista de pasos (bullet points) y un bloque JSON con parámetros clave.`;
+  const sys = 'Actúa como asistente experto en música y Web3. Devuelve respuestas breves y accionables en español. Siempre incluye una lista de pasos (bullet points) y un bloque JSON con parámetros clave.';
   const prompts = {
     creacion: `Módulo: Creación\nObjetivo: Producir música con ideas, análisis y sound design.\nContexto del usuario: ${context || '(vacío)'}\n${selText}\nIncluye: análisis de referencias, tonalidad/tempo sugeridos, paleta sonora (sintetizadores, drums), efectos recomendados, y un mini-plan de producción.\nSugiere cómo aprovechar funciones locales: /api/generate/composition, /api/effects/keysnap, mezclador A/B.\nFormato: 1) viñetas, 2) JSON { bpm, key, scale, soundDesign:[...], steps:[...] }`,
     publicacion: `Módulo: Publicación\nObjetivo: Llevar la música a streaming y Web3, unificar distribución y acuñación de NFTs.\nContexto del usuario: ${context || '(vacío)'}\n${selText}\nIncluye: check de metadatos, portada, export masters; subir a IPFS; y guía para mint (Hedera) con royalties y gobernanza.\nMenciona endpoints disponibles: /api/ipfs/upload, /api/hedera/token/create.\nFormato: 1) viñetas, 2) JSON { ipfs:{required:true}, hedera:{collectionName, symbol, royaltyBps, splits:[{account, bps}]}, steps:[...] }`,
@@ -185,7 +189,7 @@ async function assistModules({ module, context, selectedFiles = [] }) {
   };
 
   if (!GEMINI_API_KEY) {
-    const txt = `Gemini no configurado. Borrador local para ${mod}:\n` + prompts[mod];
+    const txt = `Gemini no configurado. Borrador local para ${mod}:\n${prompts[mod]}`;
     return { ok: true, module: mod, context: context || '', selectedFiles, advice: txt };
   }
 
@@ -193,8 +197,8 @@ async function assistModules({ module, context, selectedFiles = [] }) {
   try {
     const gem = await promptGemini(messages);
     return { ok: true, module: mod, context: context || '', selectedFiles, advice: gem.text || '' };
-  } catch (e) {
-    const txt = `Borrador local (Gemini falló: ${e.message}).\n` + prompts[mod];
+  } catch (err) {
+    const txt = `Borrador local (Gemini falló: ${err.message}).\n${prompts[mod]}`;
     return { ok: true, module: mod, context: context || '', selectedFiles, advice: txt };
   }
 }

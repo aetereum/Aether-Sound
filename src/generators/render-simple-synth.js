@@ -1,5 +1,5 @@
-const path = require('path');
-const { writeWav } = require('./audio-renderer');
+const path = require('node:path');
+const { writeWav } = require('../utils/audio-renderer');
 
 function saw(freq, t) {
   const p = (t * freq) % 1;

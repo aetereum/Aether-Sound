@@ -12,8 +12,8 @@ const fetch = require('node-fetch');
     console.log('Status:', res.status);
     console.log(text);
     if (!res.ok) process.exit(1);
-  } catch (e) {
-    console.error('Request failed:', e);
+  } catch (err) {
+    console.error('Request failed:', err);
     process.exit(1);
   }
 })();

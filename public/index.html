@@ -12,6 +12,27 @@
     <p>Generación musical algorítmica + IA</p>
   </header>
 
+  <!-- ===== INICIO: AJUSTES DE API KEYS (NUEVO) ===== -->
+  <div class="panel" id="api-settings-panel">
+    <h2>Ajustes de API Keys (BYOK - Trae tu propia clave)</h2>
+    <p class="hint">Guarda tus claves de API aquí. Se almacenarán de forma segura solo en tu navegador.</p>
+    <div class="form-col" style="gap: 12px; margin-top: 12px;">
+        <div class="api-key-input">
+            <label for="geminiApiKey">Gemini API Key (Google):</label>
+            <input type="password" id="geminiApiKey" placeholder="Pega tu clave de Google AI Studio aquí">
+        </div>
+        <div class="api-key-input">
+            <label for="openaiApiKey">OpenAI API Key (ChatGPT):</label>
+            <input type="password" id="openaiApiKey" placeholder="Pega tu clave de OpenAI aquí">
+        </div>
+        <!-- Puedes añadir más servicios aquí en el futuro -->
+        <div class="actions">
+          <button id="saveApiKeysButton">Guardar Claves</button>
+        </div>
+    </div>
+  </div>
+  <!-- ===== FIN: AJUSTES DE API KEYS ===== -->
+
   <main>
     <section class="grid">
       <div class="panel">
@@ -73,11 +94,11 @@
         </div>
         <div class="actions" style="margin-top: 16px;">
           <button id="generate-creative-btn">Generar</button>
-          <!-- NUEVO: Botón Evolve -->
-          <button id="evolve-btn" disabled>Evolve</button>
+          <button id="evolve-btn" disabled>Evolve con IA ✨</button>
           <button id="export-midi-btn" disabled>Exportar a MIDI</button>
         </div>
-        <audio id="creative-audio-player" controls style="width: 100%; margin-top: 12px;"></audio>
+        <!-- El reproductor de audio ya no es necesario aquí, Tone.js lo maneja -->
+        <!-- <audio id="creative-audio-player" controls style="width: 100%; margin-top: 12px;"></audio> -->
         <!-- NUEVO: Contenedor para las variaciones -->
         <div id="evolve-variations-container" class="variations-container">
             <!-- Las variaciones se insertarán aquí dinámicamente -->
@@ -823,6 +844,31 @@
       <div class="cmdk-hint">Enter para ejecutar • ESC para cerrar</div>
     </div>
   </div>
+
+  <!-- ===== INICIO DEL CHATBOT DE IA ===== -->
+  <div id="chatbot-container">
+    <div id="chatbot-widget" class="hidden">
+      <div id="chatbot-header">
+        <span>AetherBot</span>
+        <button id="chatbot-close-btn">&times;</button>
+      </div>
+      <div id="chatbot-messages">
+        <!-- Mensaje de bienvenida -->
+        <div class="bot-message">
+          <p>¡Hola! Soy AetherBot. Estoy aquí para ayudarte a navegar Aether-Sound. ¿En qué puedo ayudarte? (Recuerda tener tu API Key de Gemini en los ajustes).</p>
+        </div>
+      </div>
+      <div id="chatbot-input-container">
+        <input type="text" id="chatbot-input" placeholder="Escribe tu pregunta...">
+        <button id="chatbot-send-btn">Enviar</button>
+      </div>
+    </div>
+    <button id="chatbot-toggle-btn">
+      <!-- Icono de chatbot (puedes usar una imagen o un emoji) -->
+      🤖
+    </button>
+  </div>
+  <!-- ===== FIN DEL CHATBOT DE IA ===== -->
 
   <footer>
     <small>© 2025 Aether Sound</small>

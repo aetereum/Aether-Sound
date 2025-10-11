@@ -1,8 +1,8 @@
 const express = require('express');
-const { spawn } = require('child_process');
+const { spawn } = require('node:child_process');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const path = require('node:path');
+const fs = require('node:fs');
 
 const router = express.Router();
 
@@ -14,12 +14,12 @@ if (!fs.existsSync(uploadDir)) {
 
 // Configuración de Multer para guardar archivos subidos
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination: function(req, file, cb) {
     cb(null, uploadDir);
   },
-  filename: function (req, file, cb) {
+  filename: function(req, file, cb) {
     // Nombre de archivo único para evitar colisiones
-    cb(null, Date.now() + '-' + file.originalname);
+    cb(null, `${Date.now()}-${file.originalname}`);
   }
 });
 const upload = multer({ storage: storage });
@@ -49,7 +49,7 @@ router.post('/analyze', upload.single('audioFile'), (req, res) => {
   pythonProcess.on('close', (code) => {
     // Eliminar el archivo temporal después del análisis
     fs.unlink(audioPath, (err) => {
-      if (err) console.error("Error al eliminar el archivo temporal:", err);
+      if (err) console.error('Error al eliminar el archivo temporal:', err);
     });
 
     if (code !== 0 || errorToSend) {
