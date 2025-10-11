@@ -35,6 +35,36 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // --- Onboarding modal: show once per browser using localStorage ---
+  try {
+    const ONBOARD_KEY = 'aether_onboard_shown_v1';
+    const onboard = document.getElementById('onboarding-modal');
+    if (onboard) {
+      const closeBtn = onboard.querySelector('.onboard-close');
+      const startBtn = document.getElementById('onboard-start');
+      const dontShow = document.getElementById('dont-show-onboard');
+      const already = localStorage.getItem(ONBOARD_KEY);
+      if (!already) onboard.classList.remove('hidden');
+      const hide = () => onboard.classList.add('hidden');
+      if (closeBtn) closeBtn.addEventListener('click', () => { if (dontShow && dontShow.checked) localStorage.setItem(ONBOARD_KEY, '1'); hide(); });
+      if (startBtn) startBtn.addEventListener('click', () => { if (dontShow && dontShow.checked) localStorage.setItem(ONBOARD_KEY, '1'); hide(); });
+    }
+  } catch (err) { console.warn('Onboard init failed', err); }
+
+  // --- Quick nav: mark active and smooth scroll to panels ---
+  try {
+    document.querySelectorAll('.quick-nav button').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const tgt = btn.dataset.target;
+        if (!tgt) return;
+        document.querySelectorAll('.quick-nav button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const el = document.getElementById(tgt);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  } catch (err) { /* fail silently */ }
+
   // --- Cargar claves guardadas al iniciar ---
   function loadApiKeys() {
     const geminiKey = localStorage.getItem('geminiApiKey');

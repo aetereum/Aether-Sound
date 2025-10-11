@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aether Sound</title>
+  <!-- Tipografía moderna -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -11,6 +13,26 @@
     <h1>Aether Sound</h1>
     <p>Generación musical algorítmica + IA</p>
   </header>
+
+  <!-- Onboarding modal (muestra la primera vez) -->
+  <div id="onboarding-modal" class="onboard hidden" role="dialog" aria-modal="true" aria-labelledby="onboard-title">
+    <div class="onboard-panel">
+      <button class="onboard-close" aria-label="Cerrar">×</button>
+      <div class="onboard-body">
+        <h2 id="onboard-title">Bienvenido a Aether Sound</h2>
+        <p class="hint">Explora las herramientas de generación, prueba el asistente IA y guarda tus API Keys en Ajustes. Aquí tienes tres pasos rápidos para empezar:</p>
+        <ol>
+          <li>Guarda tus claves en <strong>Ajustes de API Keys</strong>.</li>
+          <li>Usa <strong>Generación Creativa</strong> para crear una idea.</li>
+          <li>Exporta y comparte tu pista desde <strong>Salidas</strong>.</li>
+        </ol>
+        <div class="onboard-actions">
+          <label><input type="checkbox" id="dont-show-onboard" /> No mostrar de nuevo</label>
+          <button id="onboard-start" class="primary">Comenzar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- HERO + QUICK NAV: mejora visual y acceso rápido -->
   <section class="hero">

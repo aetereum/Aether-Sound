@@ -1,5 +1,6 @@
 * { box-sizing: border-box; }
-body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background: #0b1020; color: #e6eefc; }
+/* Use Inter as the primary UI font when available */
+body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; margin: 0; background: #0b1020; color: #e6eefc; }
 .container { max-width: 1000px; margin: 40px auto; padding: 0 20px 40px; }
 .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
 .panel { background: #0f1530; border: 1px solid #1f2750; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
@@ -107,6 +108,25 @@ li[draggable="true"]:active { cursor: grabbing; }
 /* Microinteracciones */
 button { transition: transform .08s ease, box-shadow .12s ease; }
 button:active { transform: translateY(1px) scale(0.995); box-shadow: 0 0 0 rgba(0,0,0,0); }
+
+/* CTA micro-animations for hero and primary actions */
+.cta, .hero .primary, button.primary { transition: transform .16s ease, box-shadow .16s ease, opacity .12s ease; }
+.cta:hover, .hero .primary:hover, button.primary:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(0,0,0,0.45); }
+
+/* Onboarding modal */
+.onboard{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;z-index:1200}
+.onboard.hidden{display:none}
+.onboard-panel{position:relative;width:100%;max-width:720px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:18px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 30px 80px rgba(0,0,0,0.7)}
+.onboard-close{position:absolute;right:14px;top:10px;background:transparent;border:0;color:var(--muted);font-size:22px;cursor:pointer}
+.onboard-body{padding:8px 12px}
+.onboard-body h2{margin:0 0 6px}
+.onboard-body .hint{color:var(--muted);font-size:14px}
+.onboard-actions{display:flex;align-items:center;justify-content:space-between;margin-top:16px;gap:12px}
+.onboard-actions label{color:var(--muted);font-size:13px}
+.onboard-actions .primary{background:var(--accent);color:#051017;border:0;padding:8px 14px;border-radius:10px;cursor:pointer}
+
+/* Small tweak for header logo (if using inline svg asset) */
+header h1::before { width:44px;height:44px; }
 
 /* === Futuristic Dark Neon Theme overrides === */
 :root {
