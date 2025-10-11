@@ -1,16 +1,26 @@
-const fs = require('node:fs');
-const path = require('node:path');
-const WaveFile = require('wavefile').WaveFile;
+const fs = require("node:fs");
+const path = require("node:path");
+const WaveFile = require("wavefile").WaveFile;
 
-function writeWav({ samples, sampleRate = 44100, channels = 1, bitDepth = 16, filePath }) {
-  if (!Array.isArray(samples)) throw new Error('samples debe ser un array de Float32');
-  if (!filePath) throw new Error('filePath es requerido');
+function writeWav({
+  samples,
+  sampleRate = 44100,
+  channels = 1,
+  bitDepth = 16,
+  filePath,
+}) {
+  if (!Array.isArray(samples))
+    throw new Error("samples debe ser un array de Float32");
+  if (!filePath) throw new Error("filePath es requerido");
 
   // Normalizar y convertir a Int16
-  const clamp = v => Math.max(-1, Math.min(1, v));
+  const clamp = (v) => Math.max(-1, Math.min(1, v));
   const int16 = new Int16Array(samples.length);
   for (let i = 0; i < samples.length; i++) {
-    int16[i] = Math.max(-32768, Math.min(32767, Math.round(clamp(samples[i]) * 32767)));
+    int16[i] = Math.max(
+      -32768,
+      Math.min(32767, Math.round(clamp(samples[i]) * 32767)),
+    );
   }
 
   const wav = new WaveFile();
@@ -24,7 +34,7 @@ function writeWav({ samples, sampleRate = 44100, channels = 1, bitDepth = 16, fi
 }
 
 function readWav(filePath) {
-  if (!filePath) throw new Error('filePath es requerido');
+  if (!filePath) throw new Error("filePath es requerido");
   const buf = fs.readFileSync(filePath);
   const wav = new WaveFile(buf);
   const sampleRate = wav.fmt.sampleRate;
@@ -37,8 +47,9 @@ function readWav(filePath) {
     mono = new Float32Array(length);
     for (let i = 0; i < length; i++) {
       let sum = 0;
-      for (let ch = 0; ch < channelsData.length; ch++) sum += channelsData[ch][i];
-      mono[i] = (sum / channelsData.length) / 32768;
+      for (let ch = 0; ch < channelsData.length; ch++)
+        sum += channelsData[ch][i];
+      mono[i] = sum / channelsData.length / 32768;
     }
   } else {
     // Si por alguna razón viene entrelazado
@@ -47,8 +58,9 @@ function readWav(filePath) {
     mono = new Float32Array(frames);
     for (let i = 0; i < frames; i++) {
       let sum = 0;
-      for (let ch = 0; ch < numChannels; ch++) sum += inter[i * numChannels + ch];
-      mono[i] = (sum / numChannels) / 32768;
+      for (let ch = 0; ch < numChannels; ch++)
+        sum += inter[i * numChannels + ch];
+      mono[i] = sum / numChannels / 32768;
     }
   }
   return { samples: Array.from(mono), sampleRate };

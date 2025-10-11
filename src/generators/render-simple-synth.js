@@ -1,5 +1,5 @@
-const path = require('node:path');
-const { writeWav } = require('../utils/audio-renderer');
+const path = require("node:path");
+const { writeWav } = require("../utils/audio-renderer");
 
 function saw(freq, t) {
   const p = (t * freq) % 1;
@@ -43,7 +43,7 @@ async function generateSynth({ outputDir, durationSec = 5 }) {
     samples[n] = 0.7 * v * env;
   }
 
-  const filePath = path.join(outputDir, 'simple-synth.wav');
+  const filePath = path.join(outputDir, "simple-synth.wav");
   writeWav({ samples, sampleRate: sr, channels: 1, filePath });
   return filePath;
 }
@@ -51,11 +51,13 @@ async function generateSynth({ outputDir, durationSec = 5 }) {
 module.exports = { generateSynth };
 
 if (require.main === module) {
-  const outDir = path.join(__dirname, 'output');
-  generateSynth({ outputDir: outDir }).then(fp => {
-    console.log('Generado:', fp);
-  }).catch(err => {
-    console.error(err);
-    process.exit(1);
-  });
+  const outDir = path.join(__dirname, "output");
+  generateSynth({ outputDir: outDir })
+    .then((fp) => {
+      console.log("Generado:", fp);
+    })
+    .catch((err) => {
+      console.error(err);
+      process.exit(1);
+    });
 }

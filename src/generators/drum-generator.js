@@ -1,5 +1,5 @@
-const path = require('node:path');
-const { writeWav } = require('../utils/audio-renderer');
+const path = require("node:path");
+const { writeWav } = require("../utils/audio-renderer");
 
 function click(t, freq) {
   // breve impulso con decaimiento
@@ -46,7 +46,7 @@ async function generateDrums({ outputDir, durationSec = 4 }) {
     }
   }
 
-  const filePath = path.join(outputDir, 'drum-beat.wav');
+  const filePath = path.join(outputDir, "drum-beat.wav");
   writeWav({ samples, sampleRate: sr, channels: 1, filePath });
   return filePath;
 }

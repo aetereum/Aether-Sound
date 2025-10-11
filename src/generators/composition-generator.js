@@ -1,5 +1,5 @@
-const path = require('node:path');
-const { writeWav } = require('../utils/audio-renderer');
+const path = require("node:path");
+const { writeWav } = require("../utils/audio-renderer");
 
 function sine(freq, t, sr) {
   return Math.sin(2 * Math.PI * freq * t);
@@ -18,19 +18,43 @@ function noteToFreq(note) {
   return 440 * Math.pow(2, (note - 69) / 12);
 }
 
-const KEY_TO_SEMITONE = { 'C': 0, 'C#': 1, 'Db': 1, 'D': 2, 'D#': 3, 'Eb': 3, 'E': 4, 'F': 5, 'F#': 6, 'Gb': 6, 'G': 7, 'G#': 8, 'Ab': 8, 'A': 9, 'A#': 10, 'Bb': 10, 'B': 11 };
+const KEY_TO_SEMITONE = {
+  C: 0,
+  "C#": 1,
+  Db: 1,
+  D: 2,
+  "D#": 3,
+  Eb: 3,
+  E: 4,
+  F: 5,
+  "F#": 6,
+  Gb: 6,
+  G: 7,
+  "G#": 8,
+  Ab: 8,
+  A: 9,
+  "A#": 10,
+  Bb: 10,
+  B: 11,
+};
 const SCALE_INTERVALS = {
   major: [0, 2, 4, 5, 7, 9, 11, 12],
-  minor: [0, 2, 3, 5, 7, 8, 10, 12]
+  minor: [0, 2, 3, 5, 7, 8, 10, 12],
 };
 
-function buildScaleMidi({ key = 'C', scale = 'major', octave = 5 }) {
+function buildScaleMidi({ key = "C", scale = "major", octave = 5 }) {
   const root = (KEY_TO_SEMITONE[key] ?? 0) + 12 * octave; // C5=60
   const intervals = SCALE_INTERVALS[scale] || SCALE_INTERVALS.major;
-  return intervals.map(semi => 60 + (KEY_TO_SEMITONE[key] ?? 0) + semi); // around C5 region
+  return intervals.map((semi) => 60 + (KEY_TO_SEMITONE[key] ?? 0) + semi); // around C5 region
 }
 
-async function generateComposition({ outputDir, bpm = 100, key = 'C', scale = 'major', durationSec }) {
+async function generateComposition({
+  outputDir,
+  bpm = 100,
+  key = "C",
+  scale = "major",
+  durationSec,
+}) {
   const sr = 44100;
   const beatDur = 60 / bpm;
   const totalDuration = durationSec || Math.max(4, Math.min(20, 8 * beatDur)); // entre 4s y 20s aprox
@@ -44,7 +68,7 @@ async function generateComposition({ outputDir, bpm = 100, key = 'C', scale = 'm
   for (let i = 0; i < notesCount; i++) {
     const t0 = i * beatDur;
     const mNote = melodyScale[i % melodyScale.length];
-    const bNote = (i % 2 === 0) ? bassRoot : bassRoot + 7; // tónica/quinta
+    const bNote = i % 2 === 0 ? bassRoot : bassRoot + 7; // tónica/quinta
     const mFreq = noteToFreq(mNote);
     const bFreq = noteToFreq(bNote);
 
@@ -58,7 +82,7 @@ async function generateComposition({ outputDir, bpm = 100, key = 'C', scale = 'm
     }
   }
 
-  const filePath = path.join(outputDir, 'melody-with-bass.wav');
+  const filePath = path.join(outputDir, "melody-with-bass.wav");
   writeWav({ samples, sampleRate: sr, channels: 1, filePath });
   return filePath;
 }
