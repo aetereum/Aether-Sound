@@ -197,14 +197,18 @@ app.post(
     const filePath = req.file.path;
 
     try {
-      const audioBuffer = await fs.readFile(filePath);
+      const audioBuffer = await fsp.readFile(filePath);
       const identificationResult = await identifySongWithACRCloud(audioBuffer);
       res.json(identificationResult);
     } catch (err) {
       console.error("Error en /api/identify-song:", err);
       res.status(500).json({ success: false, message: err.message });
     } finally {
-      await fs.unlink(filePath); // Limpiar el archivo subido después de usarlo
+      try {
+        await fsp.unlink(filePath); // Limpiar el archivo subido después de usarlo
+      } catch (e) {
+        // ignorar si no existe
+      }
     }
   },
 );

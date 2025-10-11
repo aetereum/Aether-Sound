@@ -1,4 +1,10 @@
+mixxx/
+public/assets/
 node_modules/
+output/
+uploads/
+tmp/
+public/**/*.min.jsnode_modules/
 mixxx/
 public/
 assets/

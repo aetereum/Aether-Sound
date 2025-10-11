@@ -15,7 +15,7 @@
     "experiment:render-synth": "node render-simple-synth.js"
   },
   "dependencies": {
-    "@hashgraph/sdk": "^2.74.0",
+    "@hashgraph/sdk": "^2.72.0",
     "@tonejs/midi": "^2.0.28",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",

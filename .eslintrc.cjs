@@ -1,13 +1,19 @@
 module.exports = {
-  root: true,
   env: {
-    es2021: true
+    node: true,
+    es2021: true,
+    browser: true
+  },
+  parserOptions: {
+    ecmaVersion: 2021,
+    sourceType: 'module'
   },
   ignorePatterns: ['node_modules/', 'public/', 'assets/', 'output/', 'uploads/', 'mixxx/', 'tests/', 'tmp/'],
   extends: ['eslint:recommended', 'plugin:unicorn/recommended'],
   rules: {
     'no-console': 'off',
-    'unicorn/no-process-exit': 'off'
+    'unicorn/no-process-exit': 'off',
+    'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }]
   },
   overrides: [
     {

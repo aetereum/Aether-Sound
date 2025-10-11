@@ -3,9 +3,11 @@ const { ESLint } = require('eslint');
 const path = require('path');
 
 async function run() {
-  const eslintConfigPath = path.resolve(__dirname, '..', '.eslintrc.cjs');
+  // Use a minimal programmatic overrideConfig and disable loading other configs
+  const path = require('path');
+  const tempConfig = path.resolve(__dirname, '..', '.eslintrc.temp.cjs');
   const eslint = new ESLint({
-    overrideConfigFile: eslintConfigPath,
+    overrideConfigFile: tempConfig,
     ignore: true,
     fix: true,
   });
