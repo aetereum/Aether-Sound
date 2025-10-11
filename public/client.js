@@ -2865,6 +2865,30 @@ document.addEventListener('DOMContentLoaded', () => {
   // Usa el botón "Sync" para conectar manualmente si lo deseas.
 })();
 
+// ===== UI: Quick-nav behavior and hero hooks =====
+(function () {
+  try {
+    const toast = window.__toast || ((msg) => console.log(msg));
+    // Hero buttons
+    const heroCreate = document.getElementById('hero-create');
+    const heroExplore = document.getElementById('hero-explore');
+    if (heroCreate) heroCreate.addEventListener('click', () => { window.scrollTo({ top: 420, behavior: 'smooth' }); toast('Vamos a crear música 🎶'); });
+    if (heroExplore) heroExplore.addEventListener('click', () => { document.getElementById('output-list')?.scrollIntoView({ behavior: 'smooth' }); });
+
+    // Quick-nav buttons scroll to the corresponding panel by data-target
+    document.querySelectorAll('.quick-nav button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.getAttribute('data-target') || '';
+        const panels = Array.from(document.querySelectorAll('main .panel'));
+        const found = panels.find(p => (p.querySelector('h2') || {}).textContent?.toLowerCase().includes(target));
+        if (found) found.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.querySelectorAll('.quick-nav button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+  } catch (err) { console.warn('Quick-nav setup failed', err); }
+})();
+
 // Paleta de Comandos (Ctrl/Cmd + K)
 (function() {
   try {

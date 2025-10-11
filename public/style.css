@@ -371,6 +371,31 @@ header p { opacity: 0.85; }
   box-shadow: 0 0 0 2px rgba(0,255,149,0.2) inset, 0 6px 16px rgba(0,255,149,0.18);
 }
 
+/* Hero section for a modern landing area */
+.hero {
+  max-width: 1280px;
+  margin: 18px auto;
+  padding: 28px 20px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(58,160,255,0.04), rgba(124,77,255,0.03));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 48px rgba(12,18,40,0.6);
+}
+.hero-inner { max-width: 980px; text-align: center; }
+.hero h2 { font-size: 32px; margin: 0 0 8px; color: #fff; }
+.hero-lead { color: var(--muted); margin: 0 0 16px; font-size: 16px; }
+.hero-ctas { display:flex; gap:12px; justify-content:center; }
+.hero .primary { background: linear-gradient(90deg, #7b6cee, #3aa0ff); padding: 12px 18px; border-radius: 12px; font-weight:800; }
+.hero .ghost { background: transparent; border: 1px solid rgba(255,255,255,0.06); color: var(--accent-2); }
+
+/* Small responsive tweaks for hero */
+@media (max-width: 720px) {
+  .hero h2 { font-size: 22px; }
+  .hero { padding: 18px 12px; }
+}
+
 @media (max-width: 720px) {
   .quick-nav { top: 56px; padding: 8px 10px; gap: 6px; }
   header h1::before { width: 36px; height: 36px; }
