@@ -11,11 +11,11 @@ function findPort(start) {
   return new Promise((resolve, reject) => {
     const tryPort = (port) => {
       const tester = http.createServer();
-      tester.once('error', (err) => {
-        if (err.code === 'EADDRINUSE') {
+      tester.once('error', (_err) => {
+        if (_err.code === 'EADDRINUSE') {
           tryPort(port + 1);
         } else {
-          reject(err);
+          reject(_err);
         }
       });
       tester.once('listening', () => {
@@ -38,7 +38,7 @@ async function startServer() {
       try {
         port = await findPort(p);
         break;
-      } catch (err) {
+      } catch {
         console.log(`Puerto ${p} no disponible, probando siguiente...`);
         continue;
       }
@@ -66,20 +66,20 @@ curl http://localhost:${port}
 `);
     });
 
-  } catch (err) {
-    console.error('Error iniciando servidor:', err);
-    process.exit(1);
-  }
+    } catch (_err) {
+      console.error('Error iniciando servidor:', _err);
+      process.exit(1);
+    }
 }
 
 // Manejo de errores
-server.on('error', (error) => {
-  console.error('Error en el servidor:', error);
+server.on('error', (_error) => {
+  console.error('Error en el servidor:', _error);
   process.exit(1);
 });
 
-process.on('uncaughtException', (error) => {
-  console.error('Error no capturado:', error);
+process.on('uncaughtException', (_error) => {
+  console.error('Error no capturado:', _error);
   process.exit(1);
 });
 

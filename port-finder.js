@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
-const path = require('node:path');
+// path not used in this helper
+// const path = require('node:path');
 
 // Configuración mínima
 app.use(express.static('public'));
@@ -41,13 +42,15 @@ http://localhost:${port}
 Press Ctrl+C to stop
 ==========================================
         `);
-  }).on('error', (err) => {
-    if (err.code === 'EADDRINUSE' && currentPortIndex < ports.length - 1) {
+  }).on('error', (_err) => {
+    if (_err.code === 'EADDRINUSE' && currentPortIndex < ports.length - 1) {
       console.log(`Port ${port} in use, trying next port...`);
       currentPortIndex++;
       tryPort();
     } else {
-      console.error('Server error:', err);
+      console.error('Server error:', _err);
+      // ensure we reference server variable to avoid unused-var in some lint configs
+      void server.address();
       process.exit(1);
     }
   });

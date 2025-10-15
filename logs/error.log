@@ -1,0 +1,37 @@
+2025-10-11 19:11:06 [error]: 	500 - ENOENT: no such file or directory, scandir 'C:\Users\Alumno\Documents\GitHub\Aether-Sound\src\output' - /api/output - GET - ::1
+2025-10-11 19:11:06 [error]: 	Error: ENOENT: no such file or directory, scandir 'C:\Users\Alumno\Documents\GitHub\Aether-Sound\src\output'
+    at Object.readdirSync (node:fs:1564:26)
+    at C:\Users\Alumno\Documents\GitHub\Aether-Sound\src\routes\api.js:66:8
+    at Layer.handleRequest (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\lib\layer.js:152:17)
+    at C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\index.js:295:15
+    at processParams (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\index.js:582:12)
+    at next (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\index.js:291:5)
+2025-10-12 23:22:19 [error]: 	Error fatal al iniciar el servidor: options.port should be >= 0 and < 65536. Received type string ('300011').
+2025-10-12 23:24:49 [error]: 	500 - ENOENT: no such file or directory, scandir 'C:\Users\Alumno\Documents\GitHub\Aether-Sound\src\output' - /api/output - GET - ::1
+2025-10-12 23:24:49 [error]: 	Error: ENOENT: no such file or directory, scandir 'C:\Users\Alumno\Documents\GitHub\Aether-Sound\src\output'
+    at Object.readdirSync (node:fs:1564:26)
+    at C:\Users\Alumno\Documents\GitHub\Aether-Sound\src\routes\api.js:66:8
+    at Layer.handleRequest (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\lib\layer.js:152:17)
+    at C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\index.js:295:15
+    at processParams (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\index.js:582:12)
+    at next (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\index.js:291:5)
+2025-10-13 00:40:32 [error]: 	500 - ENOENT: no such file or directory, scandir 'C:\Users\Alumno\Documents\GitHub\Aether-Sound\src\output' - /api/output - GET - ::1
+2025-10-13 00:40:32 [error]: 	Error: ENOENT: no such file or directory, scandir 'C:\Users\Alumno\Documents\GitHub\Aether-Sound\src\output'
+    at Object.readdirSync (node:fs:1564:26)
+    at C:\Users\Alumno\Documents\GitHub\Aether-Sound\src\routes\api.js:66:8
+    at Layer.handleRequest (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\lib\layer.js:152:17)
+    at C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\index.js:295:15
+    at processParams (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\index.js:582:12)
+    at next (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\index.js:291:5)

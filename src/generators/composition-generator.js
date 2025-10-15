@@ -1,7 +1,7 @@
 const path = require("node:path");
 const { writeWav } = require("../utils/audio-renderer");
 
-function sine(freq, t, sr) {
+function sine(freq, t, _sr) {
   return Math.sin(2 * Math.PI * freq * t);
 }
 
@@ -42,8 +42,7 @@ const SCALE_INTERVALS = {
   minor: [0, 2, 3, 5, 7, 8, 10, 12],
 };
 
-function buildScaleMidi({ key = "C", scale = "major", octave = 5 }) {
-  const root = (KEY_TO_SEMITONE[key] ?? 0) + 12 * octave; // C5=60
+function buildScaleMidi({ key = "C", scale = "major", _octave = 5 }) {
   const intervals = SCALE_INTERVALS[scale] || SCALE_INTERVALS.major;
   return intervals.map((semi) => 60 + (KEY_TO_SEMITONE[key] ?? 0) + semi); // around C5 region
 }
@@ -55,10 +54,10 @@ async function generateComposition({
   scale = "major",
   durationSec,
 }) {
-  const sr = 44100;
+  const _sr = 44100;
   const beatDur = 60 / bpm;
   const totalDuration = durationSec || Math.max(4, Math.min(20, 8 * beatDur)); // entre 4s y 20s aprox
-  const totalSamples = Math.floor(totalDuration * sr);
+  const totalSamples = Math.floor(totalDuration * _sr);
   const samples = new Array(totalSamples).fill(0);
 
   const melodyScale = buildScaleMidi({ key, scale, octave: 5 });
@@ -72,18 +71,18 @@ async function generateComposition({
     const mFreq = noteToFreq(mNote);
     const bFreq = noteToFreq(bNote);
 
-    for (let n = 0; n < Math.floor(beatDur * sr); n++) {
-      const t = n / sr;
-      const idx = Math.floor((t0 + t) * sr);
+    for (let n = 0; n < Math.floor(beatDur * _sr); n++) {
+      const t = n / _sr;
+      const idx = Math.floor((t0 + t) * _sr);
       if (idx >= totalSamples) break;
-      const m = 0.35 * sine(mFreq, t, sr) * envelope(t, beatDur);
-      const b = 0.3 * sine(bFreq, t, sr) * envelope(t, beatDur);
+      const m = 0.35 * sine(mFreq, t, _sr) * envelope(t, beatDur);
+      const b = 0.3 * sine(bFreq, t, _sr) * envelope(t, beatDur);
       samples[idx] += m + b;
     }
   }
 
   const filePath = path.join(outputDir, "melody-with-bass.wav");
-  writeWav({ samples, sampleRate: sr, channels: 1, filePath });
+  writeWav({ samples, sampleRate: _sr, channels: 1, filePath });
   return filePath;
 }
 

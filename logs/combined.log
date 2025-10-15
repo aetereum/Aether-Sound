@@ -1,0 +1,198 @@
+2025-10-11 19:04:44 [info]: 	Creando directorios necesarios...
+2025-10-11 19:04:44 [info]: 	Directorios creados correctamente.
+2025-10-11 19:04:44 [warn]: 	Puerto 3000 está en uso, intentando 30001
+2025-10-11 19:04:44 [info]: 	🚀 Aether-Sound escuchando en http://localhost:30001
+2025-10-11 19:04:44 [info]: 	Directorios de trabajo:
+2025-10-11 19:04:44 [info]: 	- Uploads: C:\Users\Alumno\Documents\GitHub\Aether-Sound\uploads
+2025-10-11 19:04:44 [info]: 	- Output:  C:\Users\Alumno\Documents\GitHub\Aether-Sound\output
+2025-10-11 19:04:44 [info]: 	- Logs:    C:\Users\Alumno\Documents\GitHub\Aether-Sound\logs
+2025-10-11 19:08:20 [info]: 	Creando directorios necesarios...
+2025-10-11 19:08:20 [info]: 	Directorios creados correctamente.
+2025-10-11 19:08:20 [info]: 	🚀 Aether-Sound escuchando en http://localhost:3000
+2025-10-11 19:08:20 [info]: 	Directorios de trabajo:
+2025-10-11 19:08:20 [info]: 	- Uploads: C:\Users\Alumno\Documents\GitHub\Aether-Sound\uploads
+2025-10-11 19:08:20 [info]: 	- Output:  C:\Users\Alumno\Documents\GitHub\Aether-Sound\output
+2025-10-11 19:08:20 [info]: 	- Logs:    C:\Users\Alumno\Documents\GitHub\Aether-Sound\logs
+2025-10-11 19:11:06 [error]: 	500 - ENOENT: no such file or directory, scandir 'C:\Users\Alumno\Documents\GitHub\Aether-Sound\src\output' - /api/output - GET - ::1
+2025-10-11 19:11:06 [error]: 	Error: ENOENT: no such file or directory, scandir 'C:\Users\Alumno\Documents\GitHub\Aether-Sound\src\output'
+    at Object.readdirSync (node:fs:1564:26)
+    at C:\Users\Alumno\Documents\GitHub\Aether-Sound\src\routes\api.js:66:8
+    at Layer.handleRequest (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\lib\layer.js:152:17)
+    at C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\index.js:295:15
+    at processParams (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\index.js:582:12)
+    at next (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\index.js:291:5)
+2025-10-11 19:15:40 [info]: 	Creando directorios necesarios...
+2025-10-11 19:15:40 [info]: 	Directorios creados correctamente.
+2025-10-11 19:15:40 [info]: 	🚀 Aether-Sound escuchando en http://localhost:3000
+2025-10-11 19:15:40 [info]: 	Directorios de trabajo:
+2025-10-11 19:15:40 [info]: 	- Uploads: C:\Users\Alumno\Documents\GitHub\Aether-Sound\uploads
+2025-10-11 19:15:40 [info]: 	- Output:  C:\Users\Alumno\Documents\GitHub\Aether-Sound\output
+2025-10-11 19:15:40 [info]: 	- Logs:    C:\Users\Alumno\Documents\GitHub\Aether-Sound\logs
+2025-10-11 19:20:51 [info]: 	Creando directorios necesarios...
+2025-10-11 19:20:51 [info]: 	Directorios creados correctamente.
+2025-10-11 19:20:51 [info]: 	🚀 Aether-Sound escuchando en http://localhost:3000
+2025-10-11 19:20:51 [info]: 	Directorios de trabajo:
+2025-10-11 19:20:51 [info]: 	- Uploads: C:\Users\Alumno\Documents\GitHub\Aether-Sound\uploads
+2025-10-11 19:20:51 [info]: 	- Output:  C:\Users\Alumno\Documents\GitHub\Aether-Sound\output
+2025-10-11 19:20:51 [info]: 	- Logs:    C:\Users\Alumno\Documents\GitHub\Aether-Sound\logs
+2025-10-11 19:22:00 [info]: 	Creando directorios necesarios...
+2025-10-11 19:22:00 [info]: 	Directorios creados correctamente.
+2025-10-11 19:22:00 [info]: 	🚀 Aether-Sound escuchando en http://localhost:3000
+2025-10-11 19:22:00 [info]: 	Directorios de trabajo:
+2025-10-11 19:22:00 [info]: 	- Uploads: C:\Users\Alumno\Documents\GitHub\Aether-Sound\uploads
+2025-10-11 19:22:00 [info]: 	- Output:  C:\Users\Alumno\Documents\GitHub\Aether-Sound\output
+2025-10-11 19:22:00 [info]: 	- Logs:    C:\Users\Alumno\Documents\GitHub\Aether-Sound\logs
+2025-10-11 19:28:48 [info]: 	Creando directorios necesarios...
+2025-10-11 19:28:48 [info]: 	Directorios creados correctamente.
+2025-10-11 19:28:48 [info]: 	🚀 Aether-Sound escuchando en http://localhost:3000
+2025-10-11 19:28:48 [info]: 	Directorios de trabajo:
+2025-10-11 19:28:48 [info]: 	- Uploads: C:\Users\Alumno\Documents\GitHub\Aether-Sound\uploads
+2025-10-11 19:28:48 [info]: 	- Output:  C:\Users\Alumno\Documents\GitHub\Aether-Sound\output
+2025-10-11 19:28:48 [info]: 	- Logs:    C:\Users\Alumno\Documents\GitHub\Aether-Sound\logs
+2025-10-11 20:00:39 [info]: 	Creando directorios necesarios...
+2025-10-11 20:00:39 [info]: 	Directorios creados correctamente.
+2025-10-11 20:00:39 [info]: 	🚀 Aether-Sound escuchando en http://localhost:3000
+2025-10-11 20:00:39 [info]: 	Directorios de trabajo:
+2025-10-11 20:00:39 [info]: 	- Uploads: c:\Users\Alumno\Documents\GitHub\Aether-Sound\uploads
+2025-10-11 20:00:39 [info]: 	- Output:  c:\Users\Alumno\Documents\GitHub\Aether-Sound\output
+2025-10-11 20:00:39 [info]: 	- Logs:    c:\Users\Alumno\Documents\GitHub\Aether-Sound\logs
+2025-10-12 21:14:18 [info]: 	Creando directorios necesarios...
+2025-10-12 21:14:18 [info]: 	Directorios creados correctamente.
+2025-10-12 21:14:18 [info]: 	🚀 Aether-Sound escuchando en http://localhost:3000
+2025-10-12 21:14:18 [info]: 	Directorios de trabajo:
+2025-10-12 21:14:18 [info]: 	- Uploads: c:\Users\Alumno\Documents\GitHub\Aether-Sound\uploads
+2025-10-12 21:14:18 [info]: 	- Output:  c:\Users\Alumno\Documents\GitHub\Aether-Sound\output
+2025-10-12 21:14:18 [info]: 	- Logs:    c:\Users\Alumno\Documents\GitHub\Aether-Sound\logs
+2025-10-12 22:47:46 [info]: 	Creando directorios necesarios...
+2025-10-12 22:47:46 [info]: 	Directorios creados correctamente.
+2025-10-12 22:47:46 [warn]: 	Puerto 3000 está en uso, intentando 30001
+2025-10-12 22:47:46 [info]: 	🚀 Aether-Sound escuchando en http://localhost:30001
+2025-10-12 22:47:46 [info]: 	Directorios de trabajo:
+2025-10-12 22:47:46 [info]: 	- Uploads: c:\Users\Alumno\Documents\GitHub\Aether-Sound\uploads
+2025-10-12 22:47:46 [info]: 	- Output:  c:\Users\Alumno\Documents\GitHub\Aether-Sound\output
+2025-10-12 22:47:46 [info]: 	- Logs:    c:\Users\Alumno\Documents\GitHub\Aether-Sound\logs
+2025-10-12 22:59:22 [info]: 	Creando directorios necesarios...
+2025-10-12 22:59:22 [info]: 	Directorios creados correctamente.
+2025-10-12 22:59:22 [warn]: 	Puerto 3000 está en uso, intentando 30001
+2025-10-12 22:59:22 [info]: 	🚀 Aether-Sound escuchando en http://localhost:30001
+2025-10-12 22:59:22 [info]: 	Directorios de trabajo:
+2025-10-12 22:59:22 [info]: 	- Uploads: c:\Users\Alumno\Documents\GitHub\Aether-Sound\uploads
+2025-10-12 22:59:22 [info]: 	- Output:  c:\Users\Alumno\Documents\GitHub\Aether-Sound\output
+2025-10-12 22:59:22 [info]: 	- Logs:    c:\Users\Alumno\Documents\GitHub\Aether-Sound\logs
+2025-10-12 23:22:19 [info]: 	Creando directorios necesarios...
+2025-10-12 23:24:41 [info]: 	Creando directorios necesarios...
+2025-10-12 23:24:41 [info]: 	Directorios creados correctamente.
+2025-10-12 23:24:41 [warn]: 	Puerto 3000 está en uso, intentando 3001
+2025-10-12 23:24:41 [info]: 	🚀 Aether-Sound escuchando en http://localhost:3001
+2025-10-12 23:24:41 [info]: 	Directorios de trabajo:
+2025-10-12 23:24:41 [info]: 	- Uploads: C:\Users\Alumno\Documents\GitHub\Aether-Sound\uploads
+2025-10-12 23:24:41 [info]: 	- Output:  C:\Users\Alumno\Documents\GitHub\Aether-Sound\output
+2025-10-12 23:24:41 [info]: 	- Logs:    C:\Users\Alumno\Documents\GitHub\Aether-Sound\logs
+2025-10-12 23:24:49 [error]: 	500 - ENOENT: no such file or directory, scandir 'C:\Users\Alumno\Documents\GitHub\Aether-Sound\src\output' - /api/output - GET - ::1
+2025-10-12 23:24:49 [error]: 	Error: ENOENT: no such file or directory, scandir 'C:\Users\Alumno\Documents\GitHub\Aether-Sound\src\output'
+    at Object.readdirSync (node:fs:1564:26)
+    at C:\Users\Alumno\Documents\GitHub\Aether-Sound\src\routes\api.js:66:8
+    at Layer.handleRequest (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\lib\layer.js:152:17)
+    at C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\index.js:295:15
+    at processParams (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\index.js:582:12)
+    at next (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\index.js:291:5)
+2025-10-13 00:40:32 [error]: 	500 - ENOENT: no such file or directory, scandir 'C:\Users\Alumno\Documents\GitHub\Aether-Sound\src\output' - /api/output - GET - ::1
+2025-10-13 00:40:32 [error]: 	Error: ENOENT: no such file or directory, scandir 'C:\Users\Alumno\Documents\GitHub\Aether-Sound\src\output'
+    at Object.readdirSync (node:fs:1564:26)
+    at C:\Users\Alumno\Documents\GitHub\Aether-Sound\src\routes\api.js:66:8
+    at Layer.handleRequest (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\lib\layer.js:152:17)
+    at C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\index.js:295:15
+    at processParams (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\index.js:582:12)
+    at next (C:\Users\Alumno\Documents\GitHub\Aether-Sound\node_modules\router\index.js:291:5)
+2025-10-13 13:38:17 [warn]: 	Las credenciales de ACRCloud no están completamente configuradas. La identificación de canciones no funcionará.
+2025-10-13 13:38:17 [warn]: 	No se detectó YOUTUBE_CLIENT_ID o YOUTUBE_CLIENT_SECRET. La publicación en YouTube no estará disponible.
+2025-10-13 13:38:18 [info]: 	Creando directorios necesarios...
+2025-10-13 13:38:18 [info]: 	Directorios creados correctamente.
+2025-10-13 13:38:18 [info]: 	🚀 Aether-Sound escuchando en http://localhost:3000
+2025-10-13 13:38:18 [info]: 	Directorios de trabajo:
+2025-10-13 13:38:18 [info]: 	- Uploads: C:\Users\Alumno\Documents\GitHub\Aether-Sound\uploads
+2025-10-13 13:38:18 [info]: 	- Output:  C:\Users\Alumno\Documents\GitHub\Aether-Sound\output
+2025-10-13 13:38:18 [info]: 	- Logs:    C:\Users\Alumno\Documents\GitHub\Aether-Sound\logs
+2025-10-13 13:47:52 [warn]: 	Las credenciales de ACRCloud no están completamente configuradas. La identificación de canciones no funcionará.
+2025-10-13 13:47:52 [warn]: 	No se detectó YOUTUBE_CLIENT_ID o YOUTUBE_CLIENT_SECRET. La publicación en YouTube no estará disponible.
+2025-10-13 13:47:54 [info]: 	Creando directorios necesarios...
+2025-10-13 13:47:54 [info]: 	Directorios creados correctamente.
+2025-10-13 13:47:54 [warn]: 	Puerto 3000 está en uso, intentando 3001
+2025-10-13 13:47:54 [info]: 	🚀 Aether-Sound escuchando en http://localhost:3001
+2025-10-13 13:47:54 [info]: 	Directorios de trabajo:
+2025-10-13 13:47:54 [info]: 	- Uploads: C:\Users\Alumno\Documents\GitHub\Aether-Sound\uploads
+2025-10-13 13:47:54 [info]: 	- Output:  C:\Users\Alumno\Documents\GitHub\Aether-Sound\output
+2025-10-13 13:47:54 [info]: 	- Logs:    C:\Users\Alumno\Documents\GitHub\Aether-Sound\logs
+2025-10-13 16:08:46 [warn]: 	Las credenciales de ACRCloud no están completamente configuradas. La identificación de canciones no funcionará.
+2025-10-13 16:08:46 [warn]: 	No se detectó YOUTUBE_CLIENT_ID o YOUTUBE_CLIENT_SECRET. La publicación en YouTube no estará disponible.
+2025-10-13 16:08:46 [warn]: 	Paquete optional `googleapis` no encontrado. Rutas de YouTube deshabilitadas.
+2025-10-13 16:08:46 [info]: 	Creando directorios necesarios...
+2025-10-13 16:08:46 [info]: 	Directorios creados correctamente.
+2025-10-13 16:08:46 [warn]: 	Puerto 3000 está en uso, intentando 3001
+2025-10-13 16:08:46 [info]: 	🚀 Aether-Sound escuchando en http://localhost:3001
+2025-10-13 16:08:46 [info]: 	Directorios de trabajo:
+2025-10-13 16:08:46 [info]: 	- Uploads: C:\Users\Alumno\Documents\GitHub\Aether-Sound\uploads
+2025-10-13 16:08:46 [info]: 	- Output:  C:\Users\Alumno\Documents\GitHub\Aether-Sound\output
+2025-10-13 16:08:46 [info]: 	- Logs:    C:\Users\Alumno\Documents\GitHub\Aether-Sound\logs
+2025-10-13 16:14:21 [warn]: 	Las credenciales de ACRCloud no están completamente configuradas. La identificación de canciones no funcionará.
+2025-10-13 16:14:21 [warn]: 	No se detectó YOUTUBE_CLIENT_ID o YOUTUBE_CLIENT_SECRET. La publicación en YouTube no estará disponible.
+2025-10-13 16:14:21 [warn]: 	Paquete optional `googleapis` no encontrado. Rutas de YouTube deshabilitadas.
+2025-10-13 16:14:21 [info]: 	Creando directorios necesarios...
+2025-10-13 16:14:21 [info]: 	Directorios creados correctamente.
+2025-10-13 16:14:21 [warn]: 	Puerto 3000 está en uso, intentando 3001
+2025-10-13 16:14:21 [info]: 	🚀 Aether-Sound escuchando en http://localhost:3001
+2025-10-13 16:14:21 [info]: 	Directorios de trabajo:
+2025-10-13 16:14:21 [info]: 	- Uploads: C:\Users\Alumno\Documents\GitHub\Aether-Sound\uploads
+2025-10-13 16:14:21 [info]: 	- Output:  C:\Users\Alumno\Documents\GitHub\Aether-Sound\output
+2025-10-13 16:14:21 [info]: 	- Logs:    C:\Users\Alumno\Documents\GitHub\Aether-Sound\logs
+2025-10-13 16:14:57 [warn]: 	Las credenciales de ACRCloud no están completamente configuradas. La identificación de canciones no funcionará.
+2025-10-13 16:14:57 [warn]: 	No se detectó YOUTUBE_CLIENT_ID o YOUTUBE_CLIENT_SECRET. La publicación en YouTube no estará disponible.
+2025-10-13 16:14:58 [warn]: 	Paquete optional `googleapis` no encontrado. Rutas de YouTube deshabilitadas.
+2025-10-13 16:14:58 [info]: 	Creando directorios necesarios...
+2025-10-13 16:14:58 [info]: 	Directorios creados correctamente.
+2025-10-13 16:14:58 [warn]: 	Puerto 3000 está en uso, intentando 3001
+2025-10-13 16:14:58 [info]: 	🚀 Aether-Sound escuchando en http://localhost:3001
+2025-10-13 16:14:58 [info]: 	Directorios de trabajo:
+2025-10-13 16:14:58 [info]: 	- Uploads: C:\Users\Alumno\Documents\GitHub\Aether-Sound\uploads
+2025-10-13 16:14:58 [info]: 	- Output:  C:\Users\Alumno\Documents\GitHub\Aether-Sound\output
+2025-10-13 16:14:58 [info]: 	- Logs:    C:\Users\Alumno\Documents\GitHub\Aether-Sound\logs
+2025-10-13 16:32:19 [warn]: 	Las credenciales de ACRCloud no están completamente configuradas. La identificación de canciones no funcionará.
+2025-10-13 16:32:19 [warn]: 	No se detectó YOUTUBE_CLIENT_ID o YOUTUBE_CLIENT_SECRET. La publicación en YouTube no estará disponible.
+2025-10-13 16:32:19 [warn]: 	Paquete optional `googleapis` no encontrado. Rutas de YouTube deshabilitadas. Cannot find module 'googleapis'
+Require stack:
+- C:\Users\Alumno\Documents\GitHub\Aether-Sound\src\routes\distribution.js
+- C:\Users\Alumno\Documents\GitHub\Aether-Sound\server.js
+2025-10-13 16:32:19 [info]: 	Creando directorios necesarios...
+2025-10-13 16:32:19 [info]: 	Directorios creados correctamente.
+2025-10-13 16:32:19 [warn]: 	Puerto 3000 está en uso, intentando 3001
+2025-10-13 16:32:19 [info]: 	🚀 Aether-Sound escuchando en http://localhost:3001
+2025-10-13 16:32:19 [info]: 	Directorios de trabajo:
+2025-10-13 16:32:19 [info]: 	- Uploads: C:\Users\Alumno\Documents\GitHub\Aether-Sound\uploads
+2025-10-13 16:32:19 [info]: 	- Output:  C:\Users\Alumno\Documents\GitHub\Aether-Sound\output
+2025-10-13 16:32:19 [info]: 	- Logs:    C:\Users\Alumno\Documents\GitHub\Aether-Sound\logs
+2025-10-13 16:37:34 [warn]: 	Las credenciales de ACRCloud no están completamente configuradas. La identificación de canciones no funcionará.
+2025-10-13 16:37:34 [warn]: 	No se detectó YOUTUBE_CLIENT_ID o YOUTUBE_CLIENT_SECRET. La publicación en YouTube no estará disponible.
+2025-10-13 16:37:35 [warn]: 	Paquete optional `googleapis` no encontrado. Rutas de YouTube deshabilitadas. Cannot find module 'googleapis'
+Require stack:
+- C:\Users\Alumno\Documents\GitHub\Aether-Sound\src\routes\distribution.js
+- C:\Users\Alumno\Documents\GitHub\Aether-Sound\server.js
+2025-10-13 16:37:35 [info]: 	Creando directorios necesarios...
+2025-10-13 16:37:35 [info]: 	Directorios creados correctamente.
+2025-10-13 16:37:35 [warn]: 	Puerto 3000 está en uso, intentando 3001
+2025-10-13 16:37:35 [info]: 	🚀 Aether-Sound escuchando en http://localhost:3001
+2025-10-13 16:37:35 [info]: 	Directorios de trabajo:
+2025-10-13 16:37:35 [info]: 	- Uploads: C:\Users\Alumno\Documents\GitHub\Aether-Sound\uploads
+2025-10-13 16:37:35 [info]: 	- Output:  C:\Users\Alumno\Documents\GitHub\Aether-Sound\output
+2025-10-13 16:37:35 [info]: 	- Logs:    C:\Users\Alumno\Documents\GitHub\Aether-Sound\logs

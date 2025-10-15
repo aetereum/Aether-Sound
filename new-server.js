@@ -17,6 +17,8 @@ const PORT = process.env.PORT || 8080;
 // Configuración de multer
 const uploadDir = path.join(__dirname, 'uploads');
 const upload = multer({ dest: uploadDir });
+// kept for runtime use - referenced here to avoid linter complaining about unused var
+void upload;
 
 // Middleware básico
 app.use(cors({

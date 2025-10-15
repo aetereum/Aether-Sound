@@ -1,68 +1,73 @@
 # Aether-Sound
 
-En este repositorio encontrarás generadores musicales algorítmicos y asistidos por IA. 🔊 Más que música, creamos vibraciones que trascienden.
+Aether Sound es una suite de producción musical en la web, impulsada por algoritmos y asistida por Inteligencia Artificial. 🔊 Más que música, creamos vibraciones que trascienden.
 
 ---
 
-## 🚀 Uso Principal (Aplicación Web)
+## 🚀 Inicio Rápido
 
-El proyecto ahora funciona como una aplicación web. Para iniciarla:
+Para ejecutar la aplicación web en tu máquina local, sigue estos pasos:
 
-1.  **Clona el repositorio:**
-    ```bash
-    git clone https://github.com/aetereum/Aether-Sound.git
+### 1. Prerrequisitos
+
+*   Node.js (versión 16 o superior)
+*   Git
+
+### 2. Instalación
+
+```bash
+# 1. Clona el repositorio
+git clone https://github.com/aetereum/Aether-Sound.git
+
+# 2. Navega a la carpeta del proyecto
+cd Aether-Sound
+
+# 3. Instala las dependencias
+npm install
+```
+
+### 3. Configuración del Entorno
+
+Para utilizar las funcionalidades de IA y distribución, necesitas configurar tus claves de API.
+
+1.  Crea un archivo llamado `.env` en la raíz del proyecto.
+2.  Añade las siguientes variables con tus propias claves:
+
+    ```env
+    # Clave de API para el Chatbot y la función "Evolve" (ej. de Google Gemini)
+    AETHER_CHATBOT_API_KEY="TU_CLAVE_DE_GEMINI_AQUI"
+
+    # Credenciales para la identificación de canciones (ACRCloud)
+    ACR_HOST="identify-eu-west-1.acrcloud.com"
+    ACR_ACCESS_KEY="TU_CLAVE_DE_ACCESO_DE_ACRCLOUD"
+    ACR_ACCESS_SECRET="TU_SECRETO_DE_ACRCLOUD"
+
+    # Credenciales para la publicación en Hedera
+    HEDERA_NETWORK="testnet"
+    HEDERA_ACCOUNT_ID="TU_ACCOUNT_ID_DE_HEDERA"
+    HEDERA_PRIVATE_KEY="TU_CLAVE_PRIVADA_DE_HEDERA"
+
+    # Credenciales de Google Cloud para la API de YouTube
+    YOUTUBE_CLIENT_ID="TU_ID_DE_CLIENTE_DE_GOOGLE"
+    YOUTUBE_CLIENT_SECRET="TU_SECRETO_DE_CLIENTE_DE_GOOGLE"
     ```
-2.  **Navega a la carpeta del proyecto:**
-    ```bash
-    cd Aether-Sound
-    ```
-3.  **Instala las dependencias de Node.js:**
-    ```bash
-    npm install
-    ```
-4.  **Configura el entorno de Python para la IA:**
-    *   Asegúrate de tener Python 3.8+ instalado.
-    *   Instala las dependencias de Python:
-    ```bash
-    pip install -r requirements.txt
-    ```
-5.  **Inicia el servidor:**
-    ```bash
-    npm start
-    ```
-6.  Abre tu navegador y ve a `http://localhost:3000`. ¡Ya puedes generar música desde la web!
 
-## 🛠️ Uso como Herramienta de Consola
+### 4. Ejecución
 
-Si prefieres usar los generadores directamente desde la terminal (como antes), también puedes hacerlo.
+```bash
+# Inicia el servidor de desarrollo
+npm start
+```
 
-### 1. Generador de Composiciones (Melodía + Bajo)
+El servidor se iniciará y podrás acceder a la aplicación en `http://localhost:3000` (o en el siguiente puerto disponible si el 3000 está ocupado).
 
-Este generador crea una pieza musical corta con una melodía principal y una línea de bajo que la acompaña. Utiliza una escala predefinida (Do Mayor) y ritmos variados. La melodía usa un `FMSynth` y el bajo un `MonoSynth`, ambos procesados con efectos de Delay y Reverb para un sonido más atmosférico.
+### 5. Pruebas
 
-*   **Para ejecutarlo desde la consola:**
-    ```bash
-    npm run generate:composition
-    ```
-*   **Resultado:** Se creará un archivo `melody-with-bass.wav` en la carpeta `output/`.
+Para verificar que todos los componentes de la API funcionan correctamente, puedes ejecutar el conjunto de pruebas:
 
-### 2. Generador de Ritmos de Batería
-
-Crea un patrón de batería de 2 compases utilizando sintetizadores para el bombo, la caja y el hi-hat.
-
-*   **Para ejecutarlo desde la consola:**
-    ```bash
-    npm run generate:drums
-    ```
-*   **Resultado:** Se creará un archivo `drum-beat.wav` en la carpeta `output/`.
-
-### 3. Experimento de Sintetizador Simple
-
-*   **Para ejecutarlo desde la consola:**
-    ```bash
-    npm run experiment:render-synth
-    ```
-*   **Resultado:** Se creará un archivo `simple-synth.wav` en la carpeta `output/`.
+```bash
+npm test
+```
 
 ## 📂 Estructura del Proyecto
 
@@ -85,3 +90,31 @@ El repositorio está organizado de la siguiente manera:
 ## 🤝 Contribuir
 
 ¡Las contribuciones son bienvenidas! Si tienes una idea para un nuevo experimento, una herramienta o una mejora, por favor abre un "Issue" para discutirlo o envía un "Pull Request".
+
+---
+
+## FFmpeg (opcional pero recomendado)
+
+Para generar MP3/MP4 de forma fiable, el proyecto puede utilizar `ffmpeg`. Si `ffmpeg` está disponible en el host, el servidor lo usará para convertir WAV -> MP3 o crear un MP4 (audio + fondo estático). Si no está disponible, el servidor intentará usar el encoder JS como fallback, pero ffmpeg es la opción recomendada.
+
+Instalación local (ejemplos):
+
+Windows (choco):
+```powershell
+choco install ffmpeg
+```
+
+Ubuntu/Debian:
+```bash
+sudo apt update && sudo apt install ffmpeg -y
+```
+
+Para CI (GitHub Actions) añade un paso que instale ffmpeg en runners Ubuntu; la pipeline del repositorio ya incluye un paso de ejemplo que ejecuta:
+
+```yaml
+- name: Install ffmpeg (Ubuntu)
+    if: runner.os == 'Linux'
+    run: sudo apt-get update && sudo apt-get install -y ffmpeg
+```
+
+Si quieres que todas las pruebas de integración utilicen MP3/MP4 en CI, puedo actualizar la suite de tests para requerir ffmpeg y validar la conversión en el runner.

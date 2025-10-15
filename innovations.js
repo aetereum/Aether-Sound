@@ -3,7 +3,7 @@
   try {
     // 1) REACTIVIDAD MUSICAL GLOBAL
     let currentEnergy = 0;
-    window.__setDeckEnergy = function(deckLetter, energy) {
+    window.__setDeckEnergy = function(_deckLetter, energy) {
       currentEnergy = Math.max(0, Math.min(1, energy || 0));
       document.documentElement.style.setProperty('--reactive', String(currentEnergy));
     };
@@ -71,29 +71,32 @@
       try {
         const grid = document.querySelector('main > section.grid');
         if (!grid) return;
-        const isMobile = window.innerWidth <= 768;
-        const mixer = document.querySelector('#mixer-pro');
-        const credits = document.querySelector('#credits-panel');
-        const pulses = document.querySelector('#pulses-panel');
-        const bi = document.querySelector('#bi-panel');
-        const outputsPanel = document.getElementById('output-list')?.closest('.panel');
-        const orchestrPanel = document.getElementById('plan-pre')?.closest('.panel');
-        const localPanel = document.getElementById('btn-composition')?.closest('.panel');
-        const albumPanel = document.getElementById('album-title')?.closest('.panel');
-        let desiredOrder;
-        if (isMobile) {
-          desiredOrder = [mixer, localPanel, outputsPanel, orchestrPanel, albumPanel, credits, pulses, bi];
-        } else {
-          desiredOrder = [mixer, outputsPanel, orchestrPanel, localPanel, credits, albumPanel, pulses, bi];
-        }
-        const filtered = desiredOrder.filter(Boolean);
-        if (!filtered.length) return;
+
+  const _isMobile = window.innerWidth <= 768;
+  void _isMobile;
+
+        // Obtener paneles por su ID para mayor robustez
+        const panelOrder = [
+          'mixer-pro',
+          'panel-creative-generation',
+          'panel-outputs',
+          'panel-orchestration',
+          'panel-local-generation',
+          'panel-album',
+          'panel-mastering',
+          'panel-credits',
+          'panel-pulses',
+          'panel-bi',
+        ];
+
+        const filtered = panelOrder.map(id => document.getElementById(id)).filter(Boolean);
+
         // Solo reordenar si el primero difiere para evitar trabajo innecesario
         if (grid.firstElementChild === filtered[0]) return;
         filtered.forEach(el => {
           if (el && el.parentElement === grid) grid.appendChild(el);
         });
-      } catch (_) {}
+  } catch {}
     }
 
     function initAll() {

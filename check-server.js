@@ -18,7 +18,7 @@ const req = http.request(options, res => {
     console.log('Respuesta recibida:');
     try {
       console.log(JSON.stringify(JSON.parse(data), null, 2));
-    } catch (err) {
+    } catch {
       console.log(data);
     }
     process.exit(0);

@@ -1,6 +1,4 @@
 const http = require('node:http');
-const fs = require('node:fs').promises;
-const path = require('node:path');
 
 // Crear servidor HTTP básico
 const server = http.createServer(async (req, res) => {
@@ -76,12 +74,12 @@ Presiona Ctrl+C para detener
 });
 
 // Manejo de errores
-server.on('error', (error) => {
-  if (error.code === 'EADDRINUSE') {
+server.on('error', (_error) => {
+  if (_error.code === 'EADDRINUSE') {
     console.error(`Error: Puerto ${PORT} en uso`);
     process.exit(1);
   }
-  console.error('Error del servidor:', error);
+  console.error('Error del servidor:', _error);
   process.exit(1);
 });
 

@@ -1,6 +1,4 @@
 const http = require('node:http');
-const fs = require('node:fs');
-const path = require('node:path');
 
 // Crear un servidor HTTP simple
 const server = http.createServer((req, res) => {

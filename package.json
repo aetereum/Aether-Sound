@@ -12,30 +12,39 @@
     "e2e:3001": "powershell -NoLogo -NoProfile -File scripts/e2e.ps1 -BaseUrl 'http://localhost:3001'",
     "generate:composition": "node composition-generator.js",
     "generate:drums": "node drum-generator.js",
-    "experiment:render-synth": "node render-simple-synth.js"
+    "experiment:render-synth": "node render-simple-synth.js",
+    "test": "jest"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.16.0",
     "@hashgraph/sdk": "^2.72.0",
     "@tonejs/midi": "^2.0.28",
+    "archiver": "^7.0.1",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "express-rate-limit": "^8.1.0",
+    "express-validator": "^7.2.1",
     "form-data": "^4.0.4",
+    "googleapis": "^162.0.0",
     "helmet": "^8.1.0",
+    "lamejs": "^1.2.1",
     "multer": "^1.4.5-lts.1",
     "node-fetch": "^2.6.7",
     "tonal": "^6.4.2",
-    "wavefile": "^11.0.0"
+    "wavefile": "^11.0.0",
+    "winston": "^3.18.3"
   },
   "devDependencies": {
-    "@bandlab/eslint-config-bandlab-base": "^6.0.0",
-    "@eslint/eslintrc": "^3.3.1",
-    "@stylistic/eslint-plugin": "^1.5.4",
+    "@eslint/js": "^9.37.0",
     "eslint": "^9.37.0",
     "eslint-plugin-jsdoc": "^60.8.1",
     "eslint-plugin-unicorn": "^48.0.1",
     "express": "^5.1.0",
-    "nodemon": "^3.1.10"
+    "globals": "^13.19.0",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.10",
+    "supertest": "^7.0.0",
+    "typescript": "^5.5.4"
   },
   "keywords": [
     "music",

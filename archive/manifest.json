@@ -1,0 +1,19 @@
+{
+  "moved": [
+    "basic-server.js -> archive/servers/basic-server.js",
+    "basic-http.js -> archive/servers/basic-http.js",
+    "minimal-server.js -> archive/servers/minimal-server.js",
+    "quick-server.js -> archive/servers/quick-server.js",
+    "pure-server.js -> archive/servers/pure-server.js",
+    "optimized-server.js -> archive/servers/optimized-server.js",
+    "new-server.js -> archive/servers/new-server.js",
+    "dev-server.js -> archive/servers/dev-server.js",
+    "final-server.js -> archive/servers/final-server.js",
+    "fixed-server.js -> archive/servers/fixed-server.js",
+    "scripts/create-pr.ps1 -> archive/scripts/create-pr.ps1",
+    "scripts/create-pr-gh.ps1 -> archive/scripts/create-pr-gh.ps1",
+    "scripts/run-server-debug.js -> archive/scripts/run-server-debug.js"
+  ],
+  "timestamp": "2025-10-13T00:00:00Z",
+  "note": "Conservative archive of duplicate/legacy server files and helpers. Originals deleted from repo root."
+}

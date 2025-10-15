@@ -88,7 +88,7 @@ async function findAvailablePort(startPort) {
 
   while (port < startPort + 10) {
     try {
-      await new Promise((resolve, reject) => {
+      await new Promise((resolve) => {
         const tester = net.createServer()
           .once('error', () => {
             port++;
@@ -100,7 +100,7 @@ async function findAvailablePort(startPort) {
           .listen(port);
       });
       return port;
-    } catch (err) {
+    } catch {
       port++;
     }
   }
@@ -183,7 +183,7 @@ async function startServer() {
     }
 
     // Iniciar servidor
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
       server.listen(port, '127.0.0.1', () => {
         console.log(`
 ==========================================
@@ -212,7 +212,7 @@ Presiona Ctrl+C para detener
 
       server.on('error', (error) => {
         console.error('Error en el servidor:', error);
-        reject(error);
+        _reject(error);
       });
     });
 

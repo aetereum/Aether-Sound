@@ -1,6 +1,4 @@
-const http = require('node:http');
-const path = require('node:path');
-const fs = require('node:fs').promises;
+// test-api helper uses fetch; no need for node:http, path, or fs imports
 
 async function runTests() {
   console.log('Iniciando pruebas de conectividad...\n');

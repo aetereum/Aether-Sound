@@ -1,5 +1,5 @@
 const fs = require("node:fs");
-const path = require("node:path");
+// path is not required here; removed to avoid unused variable warning
 const fetch = require("node-fetch");
 
 const {
@@ -43,7 +43,7 @@ async function callN8N({ query, maxItems, overrides }) {
   let errText = "";
   try {
     errText = await res.text();
-  } catch (_) {}
+  } catch {}
 
   // Fallback: si el workflow no está activado, intentar /webhook-test/
   if (url.includes("/webhook/") && !url.includes("/webhook-test/")) {
@@ -54,7 +54,7 @@ async function callN8N({ query, maxItems, overrides }) {
       let errTextTest = "";
       try {
         errTextTest = await resTest.text();
-      } catch (_) {}
+      } catch {}
       throw new Error(
         `n8n webhook error ${res.status}${errText ? `: ${errText}` : ""} | test ${resTest.status}${errTextTest ? `: ${errTextTest}` : ""}`,
       );
@@ -130,7 +130,7 @@ function toLocalPlan(geminiText) {
   try {
     const m = geminiText.match(/\{[\s\S]*\}/);
     if (m) return JSON.parse(m[0]);
-  } catch (err) {}
+  } catch {}
   // Fallback plan
   return {
     bpm: 100,
@@ -190,12 +190,12 @@ async function searchAndCompose({
   let sourcesPayload = { sources: [] };
   try {
     sourcesPayload = await callN8N({ query, maxItems, overrides });
-  } catch (err) {
-    console.warn("[n8n] fallo, aplicando fallback wikipedia:", err.message);
+  } catch {
+    console.warn("[n8n] fallo, aplicando fallback wikipedia");
     try {
       sourcesPayload = await wikipediaFallback({ query, maxItems });
-    } catch (err) {
-      console.warn("fallback wikipedia falló:", err.message);
+    } catch {
+      console.warn("fallback wikipedia falló");
       sourcesPayload = {
         sources: [],
         note: "sin fuentes externas (n8n+fallback fallidos)",

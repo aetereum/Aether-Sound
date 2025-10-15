@@ -1,7 +1,7 @@
 const express = require('express');
 const http = require('node:http');
-const path = require('node:path');
-const fs = require('node:fs').promises;
+// path not used in this helper; keep commented to avoid unused import warning
+// const path = require('node:path');
 
 // Crear aplicación Express
 const app = express();
@@ -58,8 +58,8 @@ Press Ctrl+C to stop
 `);
     });
 
-    server.on('error', (error) => {
-      console.error('Server error:', error);
+    server.on('error', (_error) => {
+      console.error('Server error:', _error);
       process.exit(1);
     });
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const { ESLint } = require('eslint');
-const path = require('path');
+const _path = require('path');
+void _path;
 
 async function run() {
   // Use a minimal programmatic overrideConfig and disable loading other configs

@@ -1,22 +1,32 @@
+const globals = require('globals');
+
 module.exports = [
   {
     ignores: ['node_modules/**', 'public/**', 'assets/**', 'output/**', 'uploads/**', 'mixxx/**', 'tests/**', 'tmp/**'],
   },
   {
-    files: ['server.js', 'src/**', 'scripts/**', '*.js'],
+    files: ['**/*.js'],
     languageOptions: {
       ecmaVersion: 2021,
-      sourceType: 'script'
+      sourceType: 'commonjs',
+      globals: {
+        ...globals.node
+      }
     },
-    env: { node: true, browser: false },
     rules: {
       'no-console': 'off',
-      'unicorn/no-process-exit': 'off'
+      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }]
     }
   },
   {
-    files: ['public/**', 'src/**/client/**', 'src/**/ui/**', 'tests/**', 'public/**/*.js'],
-    env: { browser: true, node: false },
+    files: ['public/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 2021,
+      sourceType: 'script',
+      globals: {
+        ...globals.browser
+      }
+    },
     rules: {
       'no-console': 'warn'
     }

@@ -9,11 +9,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Enable CORS for development
-app.use((req, res, next) => {
+app.use((req, res, _next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  next();
+  _next();
 });
 
 // Serve static files from the public directory
@@ -49,15 +49,15 @@ app.post('/generate-synth', (req, res) => {
 });
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
 // Development-specific logging middleware
-app.use((req, res, next) => {
+app.use((req, res, _next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-  next();
+  _next();
 });
 
 app.listen(port, '127.0.0.1', () => {

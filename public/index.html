@@ -10,8 +10,15 @@
 </head>
 <body>
   <header>
-    <h1>Aether Sound</h1>
-    <p>Generación musical algorítmica + IA</p>
+    <div class="header-content">
+      <h1>Aether Sound</h1>
+      <nav class="main-nav">
+        <button data-page="page-create" class="active">Crear</button>
+        <button data-page="page-mixer">Mezclar</button>
+        <button data-page="page-publish">Publicar</button>
+        <button data-page="page-settings">Ajustes</button>
+      </nav>
+    </div>
   </header>
 
   <!-- Onboarding modal (muestra la primera vez) -->
@@ -19,16 +26,25 @@
     <div class="onboard-panel">
       <button class="onboard-close" aria-label="Cerrar">×</button>
       <div class="onboard-body">
-        <h2 id="onboard-title">Bienvenido a Aether Sound</h2>
-        <p class="hint">Explora las herramientas de generación, prueba el asistente IA y guarda tus API Keys en Ajustes. Aquí tienes tres pasos rápidos para empezar:</p>
+        <div class="onboard-top-row">
+          <h2 id="onboard-title">Bienvenido a Aether Sound</h2>
+          <div class="lang-switch" aria-hidden="false">
+            <button class="lang-btn" data-lang="es">ES</button>
+            <button class="lang-btn" data-lang="en">EN</button>
+          </div>
+        </div>
+        <p id="onboard-hint" class="hint">Explora las herramientas de generación, prueba el asistente IA y guarda tus API Keys en Ajustes. Aquí tienes tres pasos rápidos para empezar:</p>
         <ol>
           <li>Guarda tus claves en <strong>Ajustes de API Keys</strong>.</li>
           <li>Usa <strong>Generación Creativa</strong> para crear una idea.</li>
           <li>Exporta y comparte tu pista desde <strong>Salidas</strong>.</li>
         </ol>
         <div class="onboard-actions">
-          <label><input type="checkbox" id="dont-show-onboard" /> No mostrar de nuevo</label>
-          <button id="onboard-start" class="primary">Comenzar</button>
+          <label><input type="checkbox" id="dont-show-onboard" /> <span id="dont-show-label">No mostrar de nuevo</span></label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button id="onboard-start" class="primary" data-action="start">Comenzar</button>
+            <button id="onboard-explore" class="ghost" data-action="explore">Ir a Ajustes</button>
+          </div>
         </div>
       </div>
     </div>
@@ -55,30 +71,10 @@
     <button data-target="album">Álbum</button>
   </nav>
 
-  <!-- ===== INICIO: AJUSTES DE API KEYS (NUEVO) ===== -->
-  <div class="panel" id="api-settings-panel">
-    <h2>Ajustes de API Keys (BYOK - Trae tu propia clave)</h2>
-    <p class="hint">Guarda tus claves de API aquí. Se almacenarán de forma segura solo en tu navegador.</p>
-    <div class="form-col" style="gap: 12px; margin-top: 12px;">
-        <div class="api-key-input">
-            <label for="geminiApiKey">Gemini API Key (Google):</label>
-            <input type="password" id="geminiApiKey" placeholder="Pega tu clave de Google AI Studio aquí">
-        </div>
-        <div class="api-key-input">
-            <label for="openaiApiKey">OpenAI API Key (ChatGPT):</label>
-            <input type="password" id="openaiApiKey" placeholder="Pega tu clave de OpenAI aquí">
-        </div>
-        <!-- Puedes añadir más servicios aquí en el futuro -->
-        <div class="actions">
-          <button id="saveApiKeysButton">Guardar Claves</button>
-        </div>
-    </div>
-  </div>
-  <!-- ===== FIN: AJUSTES DE API KEYS ===== -->
-
   <main>
+    <div class="main-container">
     <section class="grid">
-      <div class="panel">
+      <div id="panel-local-generation" class="panel">
         <h2>Generación Local</h2>
         <div class="actions">
           <button id="btn-composition">Composición</button>
@@ -88,7 +84,7 @@
       </div>
 
       <!-- PANEL DE GENERACIÓN CREATIVA (NUEVO) -->
-      <div class="panel">
+      <div id="panel-creative-generation" class="panel">
         <h2>Generación Creativa</h2>
         <p class="hint">Usa estos controles para guiar la creación musical.</p>
         <div class="controls" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-top: 12px;">
@@ -148,7 +144,7 @@
         </div>
       </div>
 
-      <div class="panel">
+      <div id="panel-orchestration" class="panel">
         <h2>Orquestación IA</h2>
         <div class="form-row">
           <label>
@@ -168,7 +164,7 @@
         <pre id="plan-pre" class="plan"></pre>
       </div>
 
-      <div class="panel">
+      <div id="panel-outputs" class="panel">
         <h2>Salidas</h2>
         <div class="actions">
           <button id="btn-refresh">Actualizar Lista</button>
@@ -241,7 +237,8 @@
           <span id="ipfs-result" style="color:#0c0; font-size:0.9em;"></span>
           <div style="display:inline-flex; gap:6px; align-items:center;">
             <button id="btn-fingerprint" title="Generar fingerprint de la pista seleccionada (WAV)">Fingerprint</button>
-          </div>
+          </div>  
+        </div>
           <div style="display:inline-flex; gap:6px; align-items:center;">
             <label for="copyright-thr">Umbral:</label>
             <input id="copyright-thr" type="number" min="0" max="1" step="0.01" value="0.92" style="width:72px;" />
@@ -250,30 +247,8 @@
           </div>
         </div>
       </div>
-
-      <!-- PANEL DEL ASISTENTE DE MASTERIZACIÓN IA -->
-      <div class="panel">
-        <h2>Asistente de Masterización IA</h2>
-        <div class="form-col" style="gap: 12px;">
-          <label>Pista Principal (Mezcla)
-            <input id="master-main-file" type="file" accept=".wav,.mp3,.ogg,.flac" required />
-          </label>
-          <label>Pista de Referencia (Opcional)
-            <input id="master-ref-file" type="file" accept=".wav,.mp3,.ogg,.flac" />
-          </label>
-          <label>Pista de Voz (Opcional)
-            <input id="master-vocal-file" type="file" accept=".wav,.mp3,.ogg,.flac" />
-          </label>
-          <button id="btn-master-analyze">Analizar y Obtener Sugerencias</button>
-        </div>
-        <div id="mastering-results-container" style="margin-top: 16px;">
-          <h3>Resultados del Análisis:</h3>
-          <pre id="mastering-results" class="plan" style="max-height: 400px; overflow: auto;"></pre>
-        </div>
-      </div>
-
-      <!-- Mixer Pro: Interfaz de mezclas profesional (Web Audio + WebMIDI) -->
-      <div class="panel" id="mixer-pro">
+        <!-- PANEL MIXER PRO -->
+        <div class="panel" id="mixer-pro">
         <h2>Mixer Pro</h2>
         <div class="grid-2">
           <div>
@@ -374,9 +349,14 @@
           <small class="hint">Puedes usar operadores de GitHub: repo:, path:, extension:. Ej.: repo:aetereum/Aether-Sound path:output extension:wav</small>
           <small class="hint">Reproducción remota depende de CORS/formatos del origen. Se recomienda descargar/liberar a la biblioteca local cuando sea posible.</small>
         </details>
-      </div>
+        </div>
+      </section>
+    </div>
 
-      <div class="panel">
+    <!-- Página de Publicación -->
+    <div id="page-publish" class="page-content hidden">
+      <section class="grid">
+        <div id="panel-album" class="panel">
         <h2>Álbum</h2>
         <div class="form-col">
           <label>Título <input id="album-title" type="text" placeholder="Mi Álbum" /></label>
@@ -467,8 +447,12 @@
             <div id="wallet-status" class="hint"></div>
           </div>
         </div>
-      </div>
-      <div class="panel" id="pulses-panel">
+        </div>
+      </section>
+    </div>
+
+    <div id="page-settings" class="page-content hidden">
+      <div id="panel-pulses" class="panel">
         <h2>Pulsos</h2>
         <div class="actions" style="gap:8px;align-items:center;flex-wrap:wrap;">
            <label>Días <input id="pulses-days" type="number" min="1" max="30" value="7" style="width:80px;"/></label>
@@ -480,7 +464,7 @@
          <pre id="pulses-pre" class="plan" style="display:block;max-height:200px;overflow:auto;"></pre>
       </div>
 
-      <div class="panel" id="bi-panel">
+      <div id="panel-bi" class="panel">
         <h2>BI (Analítica)</h2>
         <div class="actions" style="gap:8px;align-items:center;flex-wrap:wrap;">
           <label>Días
@@ -494,7 +478,24 @@
         <pre id="bi-pre" class="plan" style="display:block;max-height:220px;overflow:auto;"></pre>
       </div>
 
-      <div class="panel" id="credits-panel">
+      <div class="panel" id="api-settings-panel">
+        <h2>Ajustes de API Keys (BYOK)</h2>
+        <p class="hint">Guarda tus claves de API aquí. Se almacenarán de forma segura solo en tu navegador.</p>
+        <div class="form-col" style="gap: 12px; margin-top: 12px;">
+            <div class="api-key-input">
+                <label for="geminiApiKey">Gemini API Key (Google):</label>
+                <input type="password" id="geminiApiKey" placeholder="Pega tu clave de Google AI Studio aquí">
+            </div>
+            <div class="api-key-input">
+                <label for="openaiApiKey">OpenAI API Key (ChatGPT):</label>
+                <input type="password" id="openaiApiKey" placeholder="Pega tu clave de OpenAI aquí">
+            </div>
+            <div class="actions">
+              <button id="saveApiKeysButton">Guardar Claves</button>
+            </div>
+        </div>
+      </div>
+       <div id="panel-credits" class="panel">
         <h2>Créditos & EPK</h2>
         <div class="form-col" style="gap:8px;">
           <div class="grid-3">
@@ -541,7 +542,7 @@
           <pre id="cred-result" class="plan" style="display:block;max-height:160px;overflow:auto;"></pre>
         </div>
       </div>
-    </section>
+    </div>
   </main>
 
   <!-- Paleta de Comandos (Ctrl+K) -->
@@ -552,366 +553,6 @@
       <div class="cmdk-hint">Enter para ejecutar • ESC para cerrar</div>
     </div>
   </div>
-
-  <footer>
-    <small>© 2025 Aether Sound</small>
-  </footer>
-
-  <script src="/client.js"></script>
-  <script src="/innovations.js"></script>
-</body>
-</html>
-            <input id="upload-input" type="file" accept=".wav,.mp3,.ogg,.flac" style="display:none" />
-            Subir archivo
-          </label>
-          <div style="display:inline-flex; gap:6px; align-items:center;">
-            <label for="keysnap-key">Tonalidad:</label>
-            <select id="keysnap-key">
-              <option value="0">C</option>
-              <option value="1">C#</option>
-              <option value="2">D</option>
-              <option value="3">D#</option>
-              <option value="4">E</option>
-              <option value="5">F</option>
-              <option value="6">F#</option>
-              <option value="7">G</option>
-              <option value="8">G#</option>
-              <option value="9">A</option>
-              <option value="10">A#</option>
-              <option value="11">B</option>
-            </select>
-            <label for="keysnap-scale">Escala:</label>
-            <select id="keysnap-scale">
-              <option value="major" selected>Mayor</option>
-              <option value="minor">Menor</option>
-            </select>
-          </div>
-          <button id="btn-keysnap" title="AutoTune (KeySnap) la pista seleccionada">KeySnap</button>
-          <div style="display:inline-flex; gap:6px; align-items:center;">
-            <label for="crossfade-sec">Crossfade (s):</label>
-            <input id="crossfade-sec" type="number" min="2" max="30" step="1" value="8" style="width:64px;" />
-            <button id="btn-crossfade" title="Crear mezcla crossfade con 2 pistas seleccionadas">Crear Crossfade</button>
-            <button id="btn-copylink" title="Copiar link del archivo seleccionado">Copiar link</button>
-          </div>
-          <button id="btn-ipfs" title="Subir a IPFS (web3.storage) la pista seleccionada">Subir a IPFS</button>
-          <span id="ipfs-result" style="color:#0c0; font-size:0.9em;"></span>
-          <div style="display:inline-flex; gap:6px; align-items:center;">
-            <button id="btn-fingerprint" title="Generar fingerprint de la pista seleccionada (WAV)">Fingerprint</button>
-          </div>
-          <div style="display:inline-flex; gap:6px; align-items:center;">
-            <label for="copyright-thr">Umbral:</label>
-            <input id="copyright-thr" type="number" min="0" max="1" step="0.01" value="0.92" style="width:72px;" />
-            <button id="btn-copyright" title="Comparar 2 pistas WAV seleccionadas para posible copia">Check Copyright</button>
-            <span id="copyright-result" style="font-size:0.9em;"></span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Mixer Pro: Interfaz de mezclas profesional (Web Audio + WebMIDI) -->
-      <div class="panel" id="mixer-pro">
-        <h2>Mixer Pro</h2>
-        <div class="grid-2">
-          <div>
-            <h3>Deck A</h3>
-            <div class="actions" style="gap:8px;flex-wrap:wrap;align-items:center;">
-              <button id="deckA-load-selected" title="Cargar primer seleccionado">Cargar seleccionado</button>
-              <button id="deckA-play">Play/Pause</button>
-              <button id="deckA-stop">Stop</button>
-              <button id="deckA-clear" title="Vaciar deck">Limpiar</button>
-              <label>Tempo/Pitch <input id="deckA-rate" type="range" min="0.5" max="1.5" step="0.01" value="1"/></label>
-              <label>Gain <input id="deckA-gain" type="range" min="0" max="2" step="0.01" value="1"/></label>
-            </div>
-            <div class="actions" style="gap:8px;flex-wrap:wrap;">
-              <label>Filtro LPF <input id="deckA-filter" type="range" min="200" max="18000" step="10" value="18000"/></label>
-              <label>Echo Time (s) <input id="deckA-echo-time" type="range" min="0" max="1" step="0.01" value="0.25"/></label>
-              <label>Echo FB <input id="deckA-echo-fb" type="range" min="0" max="0.95" step="0.01" value="0.2"/></label>
-            </div>
-            <!-- Visualizador y progreso (Deck A) -->
-            <div class="deck-visual-row">
-              <canvas id="deckA-vis" class="vis" height="100"></canvas>
-              <div id="deckA-progress" class="progress-ring" title="Progreso"></div>
-            </div>
-            <audio id="deckA-media" crossorigin="anonymous" style="width:100%"></audio>
-            <div id="deckA-track" class="deck-track"></div>
-          </div>
-
-          <div>
-            <h3>Deck B</h3>
-            <div class="actions" style="gap:8px;flex-wrap:wrap;align-items:center;">
-              <button id="deckB-load-selected" title="Cargar segundo seleccionado">Cargar seleccionado</button>
-              <button id="deckB-play">Play/Pause</button>
-              <button id="deckB-stop">Stop</button>
-              <button id="deckB-clear" title="Vaciar deck">Limpiar</button>
-              <label>Tempo/Pitch <input id="deckB-rate" type="range" min="0.5" max="1.5" step="0.01" value="1"/></label>
-              <label>Gain <input id="deckB-gain" type="range" min="0" max="2" step="0.01" value="1"/></label>
-            </div>
-            <div class="actions" style="gap:8px;flex-wrap:wrap;">
-              <label>Filtro LPF <input id="deckB-filter" type="range" min="200" max="18000" step="10" value="18000"/></label>
-              <label>Echo Time (s) <input id="deckB-echo-time" type="range" min="0" max="1" step="0.01" value="0.25"/></label>
-              <label>Echo FB <input id="deckB-echo-fb" type="range" min="0" max="0.95" step="0.01" value="0.2"/></label>
-            </div>
-            <!-- Visualizador y progreso (Deck B) -->
-            <div class="deck-visual-row">
-              <canvas id="deckB-vis" class="vis" height="100"></canvas>
-              <div id="deckB-progress" class="progress-ring" title="Progreso"></div>
-            </div>
-            <audio id="deckB-media" crossorigin="anonymous" style="width:100%"></audio>
-            <div id="deckB-track" class="deck-track"></div>
-          </div>
-        </div>
-
-        <div class="actions" style="gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px;">
-          <label style="min-width:220px;">Crossfader <input id="xfader" type="range" min="0" max="1" step="0.001" value="0.5" style="width:180px;"/></label>
-          <div class="actions" style="gap:8px;align-items:center;">
-            <button id="midi-connect">Conectar MIDI</button>
-            <select id="midi-inputs"><option value="">(sin dispositivos)</option></select>
-            <button id="midi-learn-xfader">Aprender Crossfader</button>
-            <span id="midi-status" class="hint"></span>
-            <small class="hint">Atajo: Ctrl+K abre la Paleta de Comandos</small>
-          </div>
-        </div>
-
-        <details>
-          <summary>Biblioteca y búsqueda (IA)</summary>
-          <div class="actions" style="gap:8px;flex-wrap:wrap;align-items:center;">
-            <input id="mixer-query" type="text" placeholder="house 125bpm" style="flex:1;min-width:240px;"/>
-            <button id="btn-mixer-search">Buscar música (IA)</button>
-            <button id="deckA-load-local">Cargar A (local seleccionado)</button>
-            <button id="deckB-load-local">Cargar B (local seleccionado)</button>
-            <input id="github-query" type="text" placeholder="repo:usuario/proyecto extension:wav" style="flex:1;min-width:240px;"/>
-            <button id="btn-github-search" title="Buscar en GitHub (code search)">Buscar en GitHub</button>
-            <!-- NUEVO: Búsqueda iTunes -->
-            <input id="itunes-query" type="text" placeholder="artista o canción (iTunes)" style="flex:1;min-width:240px;"/>
-            <button id="btn-itunes-search" title="Buscar en iTunes (Apple Music)">Buscar en iTunes</button>
-          </div>
-
-          <!-- NUEVO: Asistente Gemini -->
-          <div class="form-col" style="margin-top:8px;gap:8px;">
-            <label>Asistente Gemini
-              <div class="actions" style="gap:8px;flex-wrap:wrap;align-items:center;">
-                <select id="assist-module">
-                  <option value="creacion">Creación</option>
-                  <option value="publicacion">Publicación</option>
-                  <option value="web3">Web3</option>
-                  <option value="marketing">Marketing</option>
-                </select>
-                <textarea id="assist-context" rows="3" style="flex:1;min-width:260px;" placeholder="Cuéntame tu objetivo o contexto..."></textarea>
-                <button id="btn-assist">Asistir</button>
-              </div>
-            </label>
-            <pre id="assist-output" class="hint" style="white-space:pre-wrap;margin:0;"></pre>
-          </div>
-
-          <ul id="mixer-results"></ul>
-          <ul id="github-results"></ul>
-          <!-- NUEVO: Resultados iTunes -->
-          <ul id="itunes-results"></ul>
-          <small class="hint">Puedes usar operadores de GitHub: repo:, path:, extension:. Ej.: repo:aetereum/Aether-Sound path:output extension:wav</small>
-          <small class="hint">Reproducción remota depende de CORS/formatos del origen. Se recomienda descargar/liberar a la biblioteca local cuando sea posible.</small>
-        </details>
-      </div>
-
-      <div class="panel">
-        <h2>Álbum</h2>
-        <div class="form-col">
-          <label>Título <input id="album-title" type="text" placeholder="Mi Álbum" /></label>
-          <label>Artista <input id="album-artist" type="text" placeholder="Aether" /></label>
-          <label>Descripción <textarea id="album-desc" rows="3" placeholder="Notas del álbum..."></textarea></label>
-          <button id="btn-create-album">Crear Álbum</button>
-          <div id="album-result" class="hint"></div>
-          <div class="actions" style="margin-top:8px;gap:8px;flex-wrap:wrap;">
-            <button id="btn-mint-hedera" disabled>Mint en Hedera</button>
-            <button id="btn-publish-spotify" disabled>Publicar en Spotify</button>
-          </div>
-          <div id="publish-result" class="hint"></div>
-          
-          <!-- NUEVO: utilidades Hedera -->
-          <hr />
-          <div class="form-col">
-            <h3>Split NFT Collection (Hedera)</h3>
-            <div class="form-col" style="gap:8px;">
-              <label>Nombre colección <input id="split-name" type="text" placeholder="Aether Sounds Vol.1" /></label>
-              <label>Símbolo <input id="split-symbol" type="text" placeholder="ASND" /></label>
-              <label>Tesorería <input id="split-treasury" type="text" placeholder="0.0.1234" /></label>
-              <div style="border:1px solid #333;padding:8px;border-radius:6px;background:#2a2a2a;">
-                <strong>Splits/Royalties:</strong>
-                <div id="splits-container" style="margin-top:6px;"></div>
-                <div class="actions" style="gap:8px;margin-top:6px;">
-                  <button id="btn-add-split" type="button">+ Añadir Split</button>
-                  <span class="hint" id="splits-sum" style="font-size:0.85em;color:#888;">BPS total: 0</span>
-                </div>
-              </div>
-              <div class="actions" style="gap:8px;flex-wrap:wrap;">
-                <button id="btn-split-create">Crear Collection</button>
-                <button id="btn-split-mint" disabled>Mint NFT</button>
-                <button id="btn-split-associate" disabled>Asociar Token</button>
-                <button id="btn-split-transfer" disabled>Transferir NFT</button>
-              </div>
-              <div class="form-col" style="margin-top:8px;gap:6px;">
-                <label>Metadata NFT <textarea id="split-metadata" rows="3" placeholder='{"name":"Track #1","description":"My music","external_url":"https://aether.sound"}'></textarea></label>
-                <label>Cuenta destino para transferir <input id="split-to-account" type="text" placeholder="0.0.xxxxx" /></label>
-              </div>
-              <div id="split-result" class="hint" style="margin-top:8px;"></div>
-            </div>
-            
-            <hr />
-            <h3>Hedera (asociación y consulta)</h3>
-            <label>AccountId artista <input id="hedera-account" type="text" placeholder="0.0.1234" /></label>
-            <label>TokenId <input id="hedera-token" type="text" placeholder="0.0.5678" /></label>
-            <label>Serial <input id="hedera-serial" type="number" min="0" step="1" placeholder="1" /></label>
-            <label>Private Key (opcional)
-              <input id="hedera-private-key" type="password" placeholder="302e..." />
-            </label>
-            <label>Destino (accountId)
-              <input id="hedera-to" type="text" placeholder="0.0.xxxxx" />
-            </label>
-            <div class="actions" style="gap:8px;flex-wrap:wrap;">
-              <button id="btn-assoc-check">Check asociación</button>
-              <button id="btn-assoc-prepare">Prepare asociación</button>
-              <button id="btn-assoc-submit">Submit asociación</button>
-              <button id="btn-nft-owner">Owner NFT</button>
-              <button id="btn-nft-list">Listar NFTs de la cuenta</button>
-              <button id="btn-nft-transfer">Transferir NFT</button>
-            </div>
-            <label>Transacción firmada (base64)
-              <textarea id="assoc-tx-base64" rows="3" placeholder="Pega aquí la transacción firmada"></textarea>
-            </label>
-            <div class="actions" style="gap:8px;flex-wrap:wrap;">
-              <button id="btn-copy-base64">Copiar base64</button>
-              <button id="btn-clear-base64">Limpiar</button>
-            </div>
-            <div id="hedera-result" class="hint"></div>
-            <pre id="hedera-list-pre" class="plan" title="Doble clic para cargar más si hay paginación"></pre>
-            <div class="actions" style="gap:8px;flex-wrap:wrap;">
-              <button id="btn-nft-my">Ver mis NFTs</button>
-              <button id="btn-nft-more">Cargar más</button>
-            </div>
-            <div id="hedera-gallery" class="grid" style="grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px;"></div>
-            
-            <hr />
-            <h3>Wallet</h3>
-            <div class="grid-3">
-              <label>WalletConnect Project ID
-                <input id="wc-project-id" type="text" placeholder="proj_********" />
-              </label>
-            </div>
-            <div class="actions" style="gap:8px;flex-wrap:wrap;">
-              <button id="btn-wallet-connect">Conectar Wallet</button>
-              <button id="btn-assoc-wallet">Firmar asociación (wallet)</button>
-            </div>
-            <div id="wallet-status" class="hint"></div>
-          </div>
-        </div>
-      </div>
-      <div class="panel" id="pulses-panel">
-        <h2>Pulsos</h2>
-        <div class="actions" style="gap:8px;align-items:center;flex-wrap:wrap;">
-           <label>Días <input id="pulses-days" type="number" min="1" max="30" value="7" style="width:80px;"/></label>
-           <button id="btn-pulses-latest">Ver último pulso</button>
-           <button id="btn-pulses-generate">Generar pulso</button>
-           <a id="pulses-file-link" href="#" target="_blank" class="hint" style="margin-left:8px;"></a>
-         </div>
-         <div id="pulses-summary" class="grid" style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; align-items: stretch;"></div>
-         <pre id="pulses-pre" class="plan" style="display:block;max-height:200px;overflow:auto;"></pre>
-      </div>
-
-      <div class="panel" id="bi-panel">
-        <h2>BI (Analítica)</h2>
-        <div class="actions" style="gap:8px;align-items:center;flex-wrap:wrap;">
-          <label>Días
-            <input id="bi-days" type="number" min="1" max="90" value="30" style="width:80px;"/>
-          </label>
-          <button id="btn-bi-trends">Trends</button>
-          <button id="btn-bi-audience">Audience DNA</button>
-          <button id="btn-bi-roi">ROI</button>
-        </div>
-        <div id="bi-summary" class="grid" style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; align-items: stretch;"></div>
-        <pre id="bi-pre" class="plan" style="display:block;max-height:220px;overflow:auto;"></pre>
-      </div>
-
-      <div class="panel" id="credits-panel">
-        <h2>Créditos & EPK</h2>
-        <div class="form-col" style="gap:8px;">
-          <div class="grid-3">
-            <label>Título <input id="cred-title" type="text" placeholder="Nombre del single/álbum" /></label>
-            <label>Artista <input id="cred-artist" type="text" placeholder="Artista principal" /></label>
-            <label>Cover URL <input id="cred-cover" type="url" placeholder="https://.../cover.jpg" /></label>
-          </div>
-          <div class="grid-3">
-            <label>ISRC <input id="cred-isrc" type="text" placeholder="ISRC" /></label>
-            <label>ISWC <input id="cred-iswc" type="text" placeholder="ISWC" /></label>
-            <label>UPC/EAN <input id="cred-upc" type="text" placeholder="UPC/EAN" /></label>
-          </div>
-          <div class="grid-3">
-            <label>Spotify <input id="cred-spotify" type="url" placeholder="https://open.spotify.com/..." /></label>
-            <label>Apple Music <input id="cred-apple" type="url" placeholder="https://music.apple.com/..." /></label>
-            <label>YouTube <input id="cred-youtube" type="url" placeholder="https://youtube.com/..." /></label>
-          </div>
-          <div class="grid-2">
-            <label>Instagram <input id="cred-instagram" type="url" placeholder="https://instagram.com/..." /></label>
-            <label>Website <input id="cred-website" type="url" placeholder="https://mi-sitio.com" /></label>
-          </div>
-          <label>Contacto <input id="cred-contact" type="text" placeholder="manager@dominio.com | +54..." /></label>
-          <label>Notas <textarea id="cred-notes" rows="3" placeholder="Notas de prensa, bio, logros, gira..."></textarea></label>
-          <div class="card" style="background:#2a2a2a; border:1px solid #333; border-radius:8px; padding:8px;">
-            <strong>People (rol → nombre)</strong>
-            <div id="cred-people" class="form-col" style="gap:6px;"></div>
-            <div class="actions" style="gap:8px;">
-              <button id="btn-people-add" type="button">+ Añadir persona</button>
-            </div>
-          </div>
-          <div class="card" style="background:#2a2a2a; border:1px solid #333; border-radius:8px; padding:8px;">
-            <strong>Splits (party → BPS)</strong>
-            <div id="cred-splits" class="form-col" style="gap:6px;"></div>
-            <div class="actions" style="gap:8px;">
-              <button id="btn-split-add" type="button">+ Añadir split</button>
-              <span id="cred-bps-sum" class="hint">BPS total: 0</span>
-            </div>
-          </div>
-          <div class="actions" style="gap:8px; flex-wrap:wrap;">
-            <button id="btn-cred-save">Guardar créditos</button>
-            <button id="btn-epk-gen">Generar EPK</button>
-            <a id="epk-link" href="#" target="_blank" class="hint"></a>
-          </div>
-          <pre id="cred-result" class="plan" style="display:block;max-height:160px;overflow:auto;"></pre>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- Paleta de Comandos (Ctrl+K) -->
-  <div id="cmdk" class="cmdk hidden" role="dialog" aria-modal="true" aria-label="Paleta de Comandos">
-    <div class="cmdk-panel">
-      <input id="cmdk-input" type="text" placeholder="Escribe un comando (ej: play a, stop b, cargar a, buscar itunes)" autocomplete="off" />
-      <ul id="cmdk-list"></ul>
-      <div class="cmdk-hint">Enter para ejecutar • ESC para cerrar</div>
-    </div>
-  </div>
-
-  <!-- ===== INICIO DEL CHATBOT DE IA ===== -->
-  <div id="chatbot-container">
-    <div id="chatbot-widget" class="hidden">
-      <div id="chatbot-header">
-        <span>AetherBot</span>
-        <button id="chatbot-close-btn">&times;</button>
-      </div>
-      <div id="chatbot-messages">
-        <!-- Mensaje de bienvenida -->
-        <div class="bot-message">
-          <p>¡Hola! Soy AetherBot. Estoy aquí para ayudarte a navegar Aether-Sound. ¿En qué puedo ayudarte? (Recuerda tener tu API Key de Gemini en los ajustes).</p>
-        </div>
-      </div>
-      <div id="chatbot-input-container">
-        <input type="text" id="chatbot-input" placeholder="Escribe tu pregunta...">
-        <button id="chatbot-send-btn">Enviar</button>
-      </div>
-    </div>
-    <button id="chatbot-toggle-btn">
-      <!-- Icono de chatbot (puedes usar una imagen o un emoji) -->
-      🤖
-    </button>
-  </div>
-  <!-- ===== FIN DEL CHATBOT DE IA ===== -->
 
   <footer>
     <small>© 2025 Aether Sound</small>

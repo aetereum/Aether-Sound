@@ -1,5 +1,5 @@
 // Encapsular toda la lógica cuando el DOM esté listo
-window.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
 
   // --- INICIO: LÓGICA PARA ORQUESTACIÓN IA Y GESTIÓN DE CLAVES (NUEVO) ---
 
@@ -43,11 +43,44 @@ window.addEventListener('DOMContentLoaded', () => {
       const closeBtn = onboard.querySelector('.onboard-close');
       const startBtn = document.getElementById('onboard-start');
       const dontShow = document.getElementById('dont-show-onboard');
+      const exploreBtn = document.getElementById('onboard-explore');
+      const langBtns = Array.from(document.querySelectorAll('.lang-btn'));
+      const dontShowLabel = document.getElementById('dont-show-label');
+      const titleEl = document.getElementById('onboard-title');
+      const hintEl = document.getElementById('onboard-hint');
       const already = localStorage.getItem(ONBOARD_KEY);
       if (!already) onboard.classList.remove('hidden');
       const hide = () => onboard.classList.add('hidden');
       if (closeBtn) closeBtn.addEventListener('click', () => { if (dontShow && dontShow.checked) localStorage.setItem(ONBOARD_KEY, '1'); hide(); });
       if (startBtn) startBtn.addEventListener('click', () => { if (dontShow && dontShow.checked) localStorage.setItem(ONBOARD_KEY, '1'); hide(); });
+      if (exploreBtn) exploreBtn.addEventListener('click', () => {
+        if (dontShow && dontShow.checked) localStorage.setItem(ONBOARD_KEY, '1');
+        hide();
+        const settings = document.getElementById('settings-panel') || document.getElementById('api-keys-panel');
+        if (settings) settings.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+
+      // language toggle
+      function setLang(lang) {
+        localStorage.setItem('aether_lang', lang);
+        if (lang === 'en') {
+          titleEl.textContent = 'Welcome to Aether Sound';
+          hintEl.textContent = 'Explore the generation tools, try the AI assistant and save your API Keys in Settings. Here are three quick steps to get started:';
+          dontShowLabel.textContent = "Don't show again";
+          startBtn.textContent = 'Get started';
+          exploreBtn.textContent = 'Go to Settings';
+        } else {
+          titleEl.textContent = 'Bienvenido a Aether Sound';
+          hintEl.textContent = 'Explora las herramientas de generación, prueba el asistente IA y guarda tus API Keys en Ajustes. Aquí tienes tres pasos rápidos para empezar:';
+          dontShowLabel.textContent = 'No mostrar de nuevo';
+          startBtn.textContent = 'Comenzar';
+          exploreBtn.textContent = 'Ir a Ajustes';
+        }
+        langBtns.forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+      }
+
+      langBtns.forEach(b => b.addEventListener('click', () => setLang(b.dataset.lang)));
+      setLang(localStorage.getItem('aether_lang') || 'es');
     }
   } catch (err) { console.warn('Onboard init failed', err); }
 
@@ -127,8 +160,12 @@ window.addEventListener('DOMContentLoaded', () => {
 
   async function callApi(path, opts = {}) {
     const res = await fetch(path, { method: 'GET', ...opts, headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) } });
-    if (!res.ok) throw new Error('Error de red');
-    return res.json();
+    const data = await res.json().catch(() => ({ success: false, message: 'Respuesta inválida del servidor.' }));
+    if (!res.ok || data.success === false) {
+      const errorMessage = data.message || (data.errors && data.errors[0].msg) || 'Error de red';
+      throw new Error(errorMessage);
+    }
+    return data;
   }
 
   const selectedFiles = new Set();
@@ -345,6 +382,7 @@ window.addEventListener('DOMContentLoaded', () => {
   async function createAlbum() {
     const title = document.getElementById('album-title').value || 'Mi Álbum';
     const artist = document.getElementById('album-artist').value || 'Aether';
+    const cover = document.getElementById('album-cover').value || ''; // Nuevo campo para la portada
     const desc = document.getElementById('album-desc').value || '';
     const tracks = Array.from(selectedFiles);
     if (tracks.length === 0) {
@@ -355,10 +393,10 @@ window.addEventListener('DOMContentLoaded', () => {
     const result = document.getElementById('album-result');
     try {
       btn.disabled = true; btn.textContent = 'Creando Álbum...';
-      const data = await callApi('/api/album/create', { method: 'POST', body: JSON.stringify({ title, artist, description: desc, tracks }) });
-      toast(data.ok ? `Manifiesto de álbum creado: ${data.albumId}` : `Error: ${data.error}`, { type: data.ok ? 'success' : 'error' });
-      result.textContent = data.ok ? `Álbum creado: ${data.albumId || 'pendiente'}` : (data.error || 'Error creando álbum');
-      if (data.ok && data.albumId) {
+      const data = await callApi('/api/album/create', { method: 'POST', body: JSON.stringify({ title, artist, cover, description: desc, tracks }) });
+      toast(data.success ? `Manifiesto de álbum creado: ${data.albumId}` : `Error: ${data.message}`, { type: data.success ? 'success' : 'error' });
+      result.textContent = data.success ? `Álbum creado: ${data.albumId || 'pendiente'}` : (data.message || 'Error creando álbum');
+      if (data.success && data.albumId) {
         const mintBtn = document.getElementById('btn-mint-hedera');
         const pubBtn = document.getElementById('btn-publish-spotify');
         if (mintBtn) {
@@ -385,18 +423,20 @@ window.addEventListener('DOMContentLoaded', () => {
       }
       btnMint.disabled = true; const prev = btnMint.textContent; btnMint.textContent = 'Minteando...';
       try {
-        const data = await callApi('/api/hedera/mint', { method: 'POST', body: JSON.stringify({ albumId }) });
+        // Corregido: La ruta correcta es /collection/create-from-album
+        const data = await callApi('/api/hedera/collection/create-from-album', { method: 'POST', body: JSON.stringify({ albumId }) });
         const resultEl = document.getElementById('publish-result');
         if (resultEl) {
-          toast(data.ok ? `¡Álbum minteado! Token ID: ${data.tokenId}` : `Error: ${data.error}`, { type: data.ok ? 'success' : 'error' });
-          if (data.ok) {
-            resultEl.textContent = `¡Éxito! Token ID: ${data.tokenId}. Serials: ${data.serials.join(', ')}`;
+          // La respuesta ahora usa 'success' y 'message'
+          toast(data.success ? data.message : `Error: ${data.message}`, { type: data.success ? 'success' : 'error' });
+          if (data.success) {
+            resultEl.innerHTML = `¡Éxito! Colección creada: <a href="https://hashscan.io/${'testnet'}/token/${data.tokenId}" target="_blank">${data.tokenId}</a>. NFTs minteados: ${data.serials.join(', ')}`;
           } else {
             resultEl.textContent = `Error: ${data.error || JSON.stringify(data)}`;
           }
         }
       } catch (err) {
-        (document.getElementById('publish-result') || {}).textContent = `Error: ${err.message}`;
+        (document.getElementById('publish-result') || {}).textContent = `Error de red: ${err.message}`;
       } finally {
         btnMint.disabled = false; btnMint.textContent = prev;
       }
@@ -2693,7 +2733,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const response = await fetch('/api/chatbot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ apiKey: geminiApiKey, userMessage: userMessage })
+        body: JSON.stringify({ userMessage })
       });
 
       // Elimina el mensaje de "Pensando..."
@@ -3237,6 +3277,190 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 })();
 
+// --- Lógica para Creación por Voz (Hum-to-Music) ---
+(function() {
+  const recordBtn = document.getElementById('record-voice-btn');
+  const stopBtn = document.getElementById('stop-voice-btn');
+  const transcribeBtn = document.getElementById('transcribe-voice-btn');
+  const voiceStatus = document.getElementById('voice-status');
+
+  if (!recordBtn || !stopBtn || !transcribeBtn || !voiceStatus) return;
+
+  let mediaRecorder;
+  let audioChunks = [];
+  let audioBlob = null;
+
+  const setStatus = (text, isError = false) => {
+    voiceStatus.textContent = text;
+    voiceStatus.style.color = isError ? 'var(--danger)' : 'var(--text-muted)';
+  };
+
+  recordBtn.addEventListener('click', async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+
+      mediaRecorder.ondataavailable = event => {
+        audioChunks.push(event.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        audioChunks = [];
+        recordBtn.disabled = false;
+        stopBtn.disabled = true;
+        transcribeBtn.disabled = false;
+        setStatus('Grabación detenida. Listo para transcribir.');
+      };
+
+      mediaRecorder.start();
+      recordBtn.disabled = true;
+      stopBtn.disabled = false;
+      transcribeBtn.disabled = true;
+      setStatus('Grabando... 🎤');
+    } catch (err) {
+      setStatus(`Error al acceder al micrófono: ${err.message}`, true);
+      toast('No se pudo acceder al micrófono.', { type: 'error' });
+    }
+  });
+
+  stopBtn.addEventListener('click', () => {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+      mediaRecorder.stop();
+    }
+  });
+
+  transcribeBtn.addEventListener('click', async () => {
+    if (!audioBlob) {
+      toast('Primero graba una melodía.', { type: 'error' });
+      return;
+    }
+    const stopLoading = setLoading(transcribeBtn, 'Transcribiendo...');
+    setStatus('Enviando a la IA para transcribir...');
+
+    const formData = new FormData();
+    formData.append('audio_melody', audioBlob, 'melody.webm');
+
+    try {
+      const response = await fetch('/api/transcribe-melody', { method: 'POST', body: formData });
+      const data = await response.json();
+      if (!data.success) throw new Error(data.message || 'Error en la transcripción.');
+      
+      // ¡Magia! Reproducir la melodía transcrita al instante
+      await playMusicWithTone({ notes: { melody: data.notes } });
+      setStatus('¡Melodía transcrita y reproducida!');
+      lastGeneratedMusicData = { notes: { melody: data.notes }, params: {} }; // Guardar para evolucionar/exportar
+      document.getElementById('evolve-btn').disabled = false;
+      document.getElementById('export-midi-btn').disabled = false;
+
+    } catch (err) {
+      setStatus(`Error: ${err.message}`, true);
+      toast(`Error en la transcripción: ${err.message}`, { type: 'error' });
+    } finally {
+      stopLoading();
+    }
+  });
+})();
+
+// --- Lógica para Remix IA (Voz y Estilo) ---
+(function() {
+  const sourceSongInput = document.getElementById('remix-source-song');
+  const separateBtn = document.getElementById('remix-separate-btn');
+  const vocalsResult = document.getElementById('remix-vocals-result');
+  const instrumentalResult = document.getElementById('remix-instrumental-result');
+
+  const referenceArtistInput = document.getElementById('remix-reference-artist');
+  const userVoiceRecordBtn = document.getElementById('remix-record-user-voice');
+  const convertBtn = document.getElementById('remix-convert-btn');
+  const finalResult = document.getElementById('remix-final-result');
+
+  if (!separateBtn) return;
+
+  let userVoiceBlob = null;
+
+  // Paso 1: Separar vocales
+  separateBtn.addEventListener('click', async () => {
+    const file = sourceSongInput.files[0];
+    if (!file) {
+      toast('Por favor, sube la canción que quieres remezclar.', { type: 'error' });
+      return;
+    }
+
+    const stopLoading = setLoading(separateBtn, 'Separando...');
+    const formData = new FormData();
+    formData.append('source_audio', file);
+
+    try {
+      const response = await fetch('/api/remix/separate-vocals', { method: 'POST', body: formData });
+      const data = await response.json();
+      if (!data.success) throw new Error(data.message);
+
+      vocalsResult.innerHTML = `Voz Aislada: <audio controls src="${data.vocalsUrl}"></audio>`;
+      instrumentalResult.innerHTML = `Instrumental: <audio controls src="${data.instrumentalUrl}"></audio>`;
+      toast('Pistas separadas con éxito (simulado).', { type: 'success' });
+    } catch (err) {
+      toast(`Error al separar: ${err.message}`, { type: 'error' });
+    } finally {
+      stopLoading();
+    }
+  });
+
+  // Paso 2: Grabar la voz del usuario
+  userVoiceRecordBtn.addEventListener('click', async () => {
+    if (userVoiceRecordBtn.textContent.includes('Grabando')) {
+      // Detener grabación
+      window.mediaRecorder?.stop();
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const chunks = [];
+      window.mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+      
+      window.mediaRecorder.ondataavailable = e => chunks.push(e.data);
+      window.mediaRecorder.onstop = () => {
+        userVoiceBlob = new Blob(chunks, { type: 'audio/webm' });
+        userVoiceRecordBtn.textContent = 'Grabar de Nuevo 🎤';
+        convertBtn.disabled = false;
+        toast('Tu voz ha sido grabada.', { type: 'info' });
+      };
+
+      window.mediaRecorder.start();
+      userVoiceRecordBtn.textContent = 'Detener Grabación ⏹️';
+    } catch (err) {
+      toast(`Error con el micrófono: ${err.message}`, { type: 'error' });
+    }
+  });
+
+  // Paso 3: Convertir la voz
+  convertBtn.addEventListener('click', async () => {
+    const referenceFile = referenceArtistInput.files[0];
+    if (!userVoiceBlob || !referenceFile) {
+      toast('Debes grabar tu voz y subir una canción de referencia del artista.', { type: 'error' });
+      return;
+    }
+
+    const stopLoading = setLoading(convertBtn, 'Convirtiendo Voz...');
+    const formData = new FormData();
+    formData.append('source_voice', userVoiceBlob, 'user_voice.webm');
+    formData.append('reference_voice', referenceFile);
+
+    try {
+      const response = await fetch('/api/remix/convert-voice', { method: 'POST', body: formData });
+      const data = await response.json();
+      if (!data.success) throw new Error(data.message);
+
+      finalResult.innerHTML = `Voz Convertida (Simulado): <audio controls src="${data.convertedVoiceUrl}"></audio>`;
+      toast('¡Tu voz ha sido convertida al estilo del artista (simulado)!', { type: 'success' });
+    } catch (err) {
+      toast(`Error en la conversión: ${err.message}`, { type: 'error' });
+    } finally {
+      stopLoading();
+    }
+  });
+})();
+
 // --- Lógica para el panel de Generación Creativa ---
 (function() {
   const creativeGenerateBtn = document.getElementById('generate-creative-btn');
@@ -3348,12 +3572,12 @@ document.addEventListener('DOMContentLoaded', () => {
           body: JSON.stringify(params),
         });
 
-        // ¡MAGIA! Reproducir la música al instante
-        await playMusicWithTone(data);
+        // ¡MAGIA! Reproducir la música al instante con Tone.js
+        await playMusicWithTone({ notes: data.notes });
 
         lastGeneratedMusicData = { notes: data.notes, params: data.params }; // Guardamos todo
         exportMidiBtn.disabled = false; // Habilitamos la exportación
-        renderToWavBtn.disabled = false; // Habilitamos el renderizado a WAV
+        renderToWavBtn.disabled = false;
         evolveBtn.disabled = false; // ¡Habilitamos la evolución!
 
       } catch (err) {
@@ -3376,7 +3600,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const musicData = {
         notes: lastGeneratedMusicData.notes,
-        duration: lastGeneratedMusicData.notes.duration, // Asumiendo que tu generador lo provee
+        duration: 8,
         tempo: parseInt(tempoSlider.value, 10)
       };
       const result = await callApi('/api/render-music', {
